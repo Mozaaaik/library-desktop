@@ -1,0 +1,359 @@
+:root{
+  --bg:#0b1220;
+  --surface:#0f172a;
+  --surface2:#111c33;
+  --card: rgba(18,22,31,.92);
+  --border:#1f2a44;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --muted2:#64748b;
+
+  --cyan:#22d3ee;
+  --cyan2:#0891b2;
+  --purple:#a78bfa;
+  --green:#22c55e;
+  --red:#fb7185;
+
+  --r:18px;
+  --shadow: 0 26px 80px rgba(0,0,0,.45);
+}
+
+.mp{
+  padding: 22px 26px;
+  color: var(--text);
+}
+
+.mpTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.mpCrumb{
+  color: rgba(148,163,184,.78);
+  font-size: 13px;
+}
+.mpCrumb span{ margin: 0 8px; color: rgba(100,116,139,.9); }
+.mpCrumb b{ color: rgba(34,211,238,.95); font-weight: 750; }
+
+.mpTitle{
+  font-size: 34px;
+  font-weight: 850;
+  margin-top: 6px;
+  letter-spacing: .2px;
+}
+
+.mpHello{
+  margin-top: 8px;
+  color: rgba(148,163,184,.85);
+  font-size: 13px;
+}
+
+.mpPrimaryBtn{
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 0;
+  cursor:pointer;
+  color: #fff;
+  font-weight: 750;
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  background: linear-gradient(90deg, rgba(34,211,238,1), rgba(8,145,178,1));
+  box-shadow: 0 18px 40px rgba(34,211,238,.16);
+  transition: transform .14s ease, filter .14s ease;
+}
+.mpPrimaryBtn:hover{ transform: translateY(-1px); filter: brightness(1.05); }
+
+.mpCard{
+  background: linear-gradient(180deg, rgba(18,22,31,.92), rgba(10,14,26,.92));
+  border: 1px solid rgba(31,42,68,.85);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+}
+
+.mpFilters{
+  display:grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.mpSearch{
+  height: 44px;
+  border-radius: 16px;
+  border: 1px solid rgba(31,42,68,.9);
+  background: rgba(10,14,26,.72);
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  padding: 0 12px;
+  color: rgba(148,163,184,.9);
+}
+.mpInput{
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: rgba(226,232,240,.95);
+  width:100%;
+  font-size: 14px;
+}
+.mpInput::placeholder{ color: rgba(148,163,184,.55); }
+
+.mpSelectWrap{ display:flex; }
+.mpSelect{
+  width:100%;
+  height: 44px;
+  border-radius: 16px;
+  border: 1px solid rgba(31,42,68,.9);
+  background: rgba(10,14,26,.72);
+  color: rgba(226,232,240,.92);
+  padding: 0 12px;
+  outline:none;
+}
+
+.mpTableCard{ overflow:hidden; }
+
+.mpTable{ width:100%; }
+
+.mpThead{
+  display:grid;
+  grid-template-columns: 1.5fr .8fr 2fr 1fr .8fr .9fr;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(31,42,68,.85);
+  color: rgba(148,163,184,.85);
+  font-size: 13px;
+}
+.mpThead .right{ text-align:right; }
+
+.mpTbody{ display:flex; flex-direction:column; }
+
+.mpRow{
+  display:grid;
+  grid-template-columns: 1.5fr .8fr 2fr 1fr .8fr .9fr;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(31,42,68,.65);
+  cursor:pointer;
+  transition: background .12s ease;
+}
+.mpRow:hover{
+  background: rgba(255,255,255,.03);
+}
+
+.mpCell{ display:flex; align-items:center; }
+.mpCell.muted{ color: rgba(226,232,240,.85); }
+
+.mpUser{ display:flex; align-items:center; gap: 12px; }
+.mpAvatar{
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display:grid;
+  place-items:center;
+  background: linear-gradient(135deg, rgba(34,211,238,.18), rgba(167,139,250,.14));
+  border: 1px solid rgba(34,211,238,.20);
+  color: rgba(34,211,238,.9);
+}
+.mpName{ font-weight: 750; color: rgba(226,232,240,.98); }
+
+.mpContact{ display:flex; flex-direction:column; gap: 8px; }
+.mpContact .line{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  color: rgba(226,232,240,.9);
+  font-size: 13px;
+}
+.mpContact .line svg{ color: rgba(148,163,184,.7); }
+.mpContact .sub{ color: rgba(148,163,184,.85); }
+
+.mpPill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 750;
+  border: 1px solid transparent;
+  margin-right: 8px;
+}
+.mpPillCyan{ background: rgba(34,211,238,.14); border-color: rgba(34,211,238,.22); color: rgba(34,211,238,.95); }
+.mpPillGreen{ background: rgba(34,197,94,.14); border-color: rgba(34,197,94,.22); color: rgba(34,197,94,.95); }
+.mpPillRed{ background: rgba(251,113,133,.14); border-color: rgba(251,113,133,.25); color: rgba(251,113,133,.95); }
+
+.mpDim{ color: rgba(148,163,184,.55); font-size: 13px; }
+
+.mpActions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap: 10px;
+  width:100%;
+}
+.mpCell.right{ justify-content:flex-end; }
+.mpIconBtn{
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  border: 1px solid rgba(31,42,68,.65);
+  background: rgba(255,255,255,.02);
+  color: rgba(226,232,240,.9);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  transition: background .12s ease, border-color .12s ease, transform .12s ease, color .12s ease;
+}
+.mpIconBtn:hover{ transform: translateY(-1px); }
+.mpIconBtn.cyan:hover{ background: rgba(34,211,238,.10); border-color: rgba(34,211,238,.22); color: rgba(34,211,238,.95); }
+.mpIconBtn.purple:hover{ background: rgba(167,139,250,.10); border-color: rgba(167,139,250,.22); color: rgba(167,139,250,.95); }
+.mpIconBtn.red:hover{ background: rgba(251,113,133,.10); border-color: rgba(251,113,133,.22); color: rgba(251,113,133,.95); }
+
+.mpEmpty{
+  padding: 22px 16px;
+  color: rgba(148,163,184,.75);
+}
+
+.mpPaging{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 14px 16px;
+  color: rgba(148,163,184,.85);
+}
+.mpPaging b{ color: rgba(226,232,240,.98); }
+
+.mpPagingBtns{ display:flex; gap: 10px; align-items:center; }
+.mpOutlineBtn{
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(31,42,68,.8);
+  background: rgba(255,255,255,.02);
+  color: rgba(226,232,240,.88);
+  cursor:pointer;
+  transition: background .12s ease, transform .12s ease, border-color .12s ease;
+}
+.mpOutlineBtn:hover{ background: rgba(255,255,255,.04); transform: translateY(-1px); }
+
+.mpPageBtn{
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(34,211,238,.22);
+  background: rgba(34,211,238,.14);
+  color: rgba(34,211,238,.95);
+  font-weight: 850;
+  cursor:pointer;
+}
+
+.mpOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 20px;
+  z-index: 50;
+}
+
+.mpModal{
+  width: min(720px, 96vw);
+  border-radius: 22px;
+  border: 1px solid rgba(31,42,68,.85);
+  background: linear-gradient(180deg, rgba(18,22,31,.96), rgba(10,14,26,.96));
+  box-shadow: 0 40px 120px rgba(0,0,0,.65);
+  overflow:hidden;
+}
+.mpModal.small{ width: min(520px, 96vw); }
+
+.mpModalHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 12px;
+  padding: 16px 16px;
+  border-bottom: 1px solid rgba(31,42,68,.65);
+}
+.mpModalTitle{ font-size: 18px; font-weight: 850; }
+.mpModalSub{ margin-top: 6px; color: rgba(148,163,184,.8); font-size: 13px; }
+
+.mpX{
+  width: 38px; height: 38px;
+  border-radius: 14px;
+  border: 1px solid rgba(31,42,68,.65);
+  background: rgba(255,255,255,.02);
+  color: rgba(226,232,240,.9);
+  cursor:pointer;
+}
+
+.mpModalBody{ padding: 16px; }
+.mpGrid2{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+
+.mpField label{ display:block; color: rgba(148,163,184,.9); font-size: 13px; margin-bottom: 8px; }
+
+.mpInput2, .mpSelect2{
+  width: 100%;
+  height: 42px;
+  border-radius: 14px;
+  border: 1px solid rgba(31,42,68,.85);
+  background: rgba(10,14,26,.75);
+  color: rgba(226,232,240,.95);
+  padding: 0 12px;
+  outline:none;
+}
+.mpInput2:focus, .mpSelect2:focus{
+  border-color: rgba(34,211,238,.45);
+  box-shadow: 0 0 0 4px rgba(34,211,238,.10);
+}
+
+.mpModalFoot{
+  display:flex;
+  justify-content:flex-end;
+  gap: 10px;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(31,42,68,.65);
+}
+
+.mpPrimaryBtn2{
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 0;
+  cursor:pointer;
+  color: #fff;
+  font-weight: 850;
+  background: linear-gradient(90deg, rgba(34,211,238,1), rgba(8,145,178,1));
+}
+
+.mpDangerBtn{
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(251,113,133,.25);
+  background: rgba(251,113,133,.14);
+  color: rgba(251,113,133,.95);
+  font-weight: 850;
+  cursor:pointer;
+}
+
+.mpToast{
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  background: rgba(15,23,42,.95);
+  border: 1px solid rgba(31,42,68,.85);
+  color: rgba(226,232,240,.95);
+  padding: 12px 14px;
+  border-radius: 14px;
+  box-shadow: 0 24px 70px rgba(0,0,0,.55);
+  z-index: 70;
+  max-width: 420px;
+}

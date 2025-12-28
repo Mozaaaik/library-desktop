@@ -1,0 +1,13 @@
+.shell{
+  display:flex;
+  min-height:100vh;
+  background: radial-gradient(1200px 800px at 20% 25%, rgba(34,211,238,.08), transparent 55%),
+              radial-gradient(1200px 800px at 80% 70%, rgba(167,139,250,.07), transparent 55%),
+              linear-gradient(135deg, #0b1220, #0f172a, #0b1220);
+}
+
+.shellMain{
+  flex:1;
+  min-width:0;
+  overflow:auto;
+}
