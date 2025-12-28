@@ -3,21 +3,20 @@ import { LoansService } from './loans.service';
 
 @Controller('loans')
 export class LoansController {
-    constructor(private readonly loansService: LoansService) { }
+  constructor(private readonly loansService: LoansService) {}
 
-    @Post()
-    async borrowBook(@Body() body: any) {
-        return await this.loansService.createLoan(body);
-    }
+  @Post()
+  async borrowBook(@Body() body: any) {
+    return await this.loansService.createLoan(body);
+  }
 
-    @Post('return')
-    async returnBook(@Body() body: any) {
-        return await this.loansService.returnBook(body);
-    }
+  @Post('return')
+  async returnBook(@Body() body: any) {
+    return await this.loansService.returnBook(body);
+  }
 
-    @Get('active')
-    async active() {
-        return this.loansService.active();
-    }
-
+  @Get('active')
+  async active() {
+    return this.loansService.active();
+  }
 }

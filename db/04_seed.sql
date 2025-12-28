@@ -64,15 +64,15 @@ INSERT INTO Kitaplar (KategoriID, Baslik, Yazar, Yayinevi, ISBN, ToplamAdet, Mev
 -- ==========================================
 -- 4. ÜYELER (Öğrenciler)
 -- ==========================================
-INSERT INTO Uyeler (OgrenciNo, AdSoyad, Telefon, Email) VALUES 
-('20241001', 'Ahmet Yılmaz', '5551002030', 'ahmet@ogrenci.edu.tr'),
-('20241002', 'Zeynep Demir', '5552003040', 'zeynep@ogrenci.edu.tr'),
-('20241003', 'Caner Erkin', '5553004050', 'caner@ogrenci.edu.tr'),
-('20242001', 'Elif Kaya', '5554005060', 'elif@ogrenci.edu.tr'),
-('20242002', 'Burak Yılmaz', '5555006070', 'burak@ogrenci.edu.tr'),
-('20243001', 'Selin Şahin', '5556007080', 'selin@ogrenci.edu.tr'),
-('20243002', 'Mert Çelik', '5557008090', 'mert@ogrenci.edu.tr'),
-('20243003', 'Gizem Aslan', '5558009000', 'gizem@ogrenci.edu.tr');
+INSERT INTO Uyeler (OgrenciNo, Ad, Soyad, Telefon, Email, Durum) VALUES 
+('20241001', 'Ahmet', 'Yılmaz', '5551002030', 'ahmet@ogrenci.edu.tr', 'Aktif'),
+('20241002', 'Zeynep', 'Demir', '5552003040', 'zeynep@ogrenci.edu.tr', 'Aktif'),
+('20241003', 'Caner', 'Erkin', '5553004050', 'caner@ogrenci.edu.tr', 'Aktif'),
+('20242001', 'Elif', 'Kaya', '5554005060', 'elif@ogrenci.edu.tr', 'Aktif'),
+('20242002', 'Burak', 'Yılmaz', '5555006070', 'burak@ogrenci.edu.tr', 'Aktif'),
+('20243001', 'Selin', 'Şahin', '5556007080', 'selin@ogrenci.edu.tr', 'Aktif'),
+('20243002', 'Mert', 'Çelik', '5557008090', 'mert@ogrenci.edu.tr', 'Aktif'),
+('20243003', 'Gizem', 'Aslan', '5558009000', 'gizem@ogrenci.edu.tr', 'Aktif');
 
 -- ==========================================
 -- 5. ÖDÜNÇ İŞLEMLERİ (Senaryolar)

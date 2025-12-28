@@ -20,11 +20,13 @@ CREATE TABLE Kategoriler (
 -- 3. Üyeler (Öğrenciler) Tablosu
 CREATE TABLE Uyeler (
     UyeID INT AUTO_INCREMENT PRIMARY KEY,
-    AdSoyad VARCHAR(100) NOT NULL,
+    Ad VARCHAR(50) NOT NULL,
+    Soyad VARCHAR(50) NOT NULL,
     Telefon VARCHAR(15),
     OgrenciNo CHAR(8) NOT NULL UNIQUE,
     Email VARCHAR(100),
     ToplamBorc DECIMAL(10, 2) DEFAULT 0.00,
+    Durum ENUM('Aktif', 'Donduruldu') DEFAULT 'Aktif',
     KayitTarihi DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   Plus,
   Search,
@@ -11,18 +11,18 @@ import {
 } from "lucide-react";
 import "../pages/MembersPage.css";
 
-const initialMembers = [
-  { id: 1, ad: "Ahmet", soyad: "Yılmaz", studentId: "20210001", email: "ahmet.yilmaz@university.edu", phone: "+90 532 123 4567", activeLoans: 2, debt: 0, status: "Aktif" },
-  { id: 2, ad: "Zeynep", soyad: "Kaya", studentId: "20210002", email: "zeynep.kaya@university.edu", phone: "+90 533 234 5678", activeLoans: 1, debt: 0, status: "Aktif" },
-  { id: 3, ad: "Mehmet", soyad: "Demir", studentId: "20200155", email: "mehmet.demir@university.edu", phone: "+90 534 345 6789", activeLoans: 3, debt: 40, status: "Aktif" },
-  { id: 4, ad: "Ayşe", soyad: "Şahin", studentId: "20210003", email: "ayse.sahin@university.edu", phone: "+90 535 456 7890", activeLoans: 0, debt: 0, status: "Aktif" },
-  { id: 5, ad: "Can", soyad: "Öztürk", studentId: "20190088", email: "can.ozturk@university.edu", phone: "+90 536 567 8901", activeLoans: 1, debt: 120, status: "Donduruldu" },
-];
-
 export default function MembersPage({ onNavigate, user }) {
-  const [members, setMembers] = useState(initialMembers);
+  const [members, setMembers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
+  // Arama yapılınca sayfayı 1'e döndür
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter]);
 
   // modal states
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -31,6 +31,24 @@ export default function MembersPage({ onNavigate, user }) {
 
   const [toast, setToast] = useState("");
   const [confirm, setConfirm] = useState({ open: false, member: null });
+
+  const API_URL = "http://localhost:3000/members";
+
+  const fetchMembers = async () => {
+    try {
+      const res = await fetch(API_URL);
+      if (!res.ok) throw new Error("Veri çekilemedi");
+      const data = await res.json();
+      setMembers(data);
+    } catch (error) {
+      console.error(error);
+      showToast("Veriler yüklenirken hata oluştu ❌");
+    }
+  };
+
+  useEffect(() => {
+    fetchMembers();
+  }, []);
 
   const fullName = (m) => `${m.ad} ${m.soyad}`;
 
@@ -47,10 +65,24 @@ export default function MembersPage({ onNavigate, user }) {
     });
   }, [members, searchQuery, statusFilter]);
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentMembers = filteredMembers.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+  const totalPages = Math.ceil(filteredMembers.length / itemsPerPage);
+
+  const changePage = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
   const openAdd = () => {
     setFormMode("add");
     setEditingMember({
-      id: Date.now(),
+      // id: Date.now(), Backend oluşturacak
       ad: "",
       soyad: "",
       studentId: "",
@@ -58,7 +90,7 @@ export default function MembersPage({ onNavigate, user }) {
       phone: "",
       activeLoans: 0,
       debt: 0,
-      status: "Active",
+      status: "Aktif",
     });
     setIsFormOpen(true);
   };
@@ -90,22 +122,57 @@ export default function MembersPage({ onNavigate, user }) {
     return "";
   };
 
-  const saveMember = () => {
+  const saveMember = async () => {
     const err = validateMember(editingMember);
     if (err) {
       showToast(err);
       return;
     }
 
-    if (formMode === "add") {
-      setMembers((prev) => [editingMember, ...prev]);
-      showToast("Üye eklendi ✅");
-    } else {
-      setMembers((prev) => prev.map((x) => (x.id === editingMember.id ? editingMember : x)));
-      showToast("Üye güncellendi ✅");
+    let memberToSave = { ...editingMember };
+
+    if (Number(memberToSave.debt) > 150) {
+      // Borç 150'den büyükse durumu otomatik olarak "Donduruldu" yap
+      memberToSave.status = "Donduruldu";
+      showToast("Borç limiti aşıldığı için üye donduruldu ⚠️"); // Silinebilir
     }
 
-    closeForm();
+    try {
+      if (formMode === "add") {
+        // --- CREATE (POST) ---
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(memberToSave),
+        });
+
+        if (res.ok) {
+          showToast("Üye eklendi");
+          fetchMembers(); // Listeyi yenile
+          closeForm();
+        } else {
+          showToast("Ekleme başarısız");
+        }
+      } else {
+        // --- UPDATE (PUT) ---
+        const res = await fetch(`${API_URL}/${memberToSave.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(memberToSave),
+        });
+
+        if (res.ok) {
+          showToast("Üye güncellendi");
+          fetchMembers(); // Listeyi yenile
+          closeForm();
+        } else {
+          showToast("Güncelleme başarısız");
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      showToast("Sunucu hatası ⚠️");
+    }
   };
 
   const requestDelete = (m) => {
@@ -117,11 +184,25 @@ export default function MembersPage({ onNavigate, user }) {
     setConfirm({ open: true, member: m });
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     const m = confirm.member;
-    setMembers((prev) => prev.filter((x) => x.id !== m.id));
-    setConfirm({ open: false, member: null });
-    showToast("Üye silindi 🗑️");
+    try {
+      const res = await fetch(`${API_URL}/${m.id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        showToast("Üye silindi 🗑️");
+        fetchMembers(); // Listeyi yenile
+      } else {
+        showToast("Silme işlemi başarısız ❌");
+      }
+    } catch (error) {
+      console.error(error);
+      showToast("Sunucu hatası ⚠️");
+    } finally {
+      setConfirm({ open: false, member: null });
+    }
   };
 
   return (
@@ -129,9 +210,13 @@ export default function MembersPage({ onNavigate, user }) {
       {/* Top area */}
       <div className="mpTop">
         <div>
-          <div className="mpCrumb">Ana Sayfa <span>›</span> Üyeler <span>›</span> <b>Liste</b></div>
+          <div className="mpCrumb">
+            Ana Sayfa <span>›</span> Üyeler <span>›</span> <b>Liste</b>
+          </div>
           <div className="mpTitle">Üyeler</div>
-          <div className="mpHello">Hoş geldiniz, <b>{user?.name || "Admin User"}</b></div>
+          <div className="mpHello">
+            Hoş geldiniz, <b>{user?.name || "Admin User"}</b>
+          </div>
         </div>
 
         <button className="mpPrimaryBtn" type="button" onClick={openAdd}>
@@ -153,10 +238,14 @@ export default function MembersPage({ onNavigate, user }) {
         </div>
 
         <div className="mpSelectWrap">
-          <select className="mpSelect" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+          <select
+            className="mpSelect"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
             <option value="all">Tüm Durumlar</option>
-            <option value="Active">Aktif</option>
-            <option value="Suspended">Donduruldu</option>
+            <option value="Aktif">Aktif</option>
+            <option value="Donduruldu">Donduruldu</option>
           </select>
         </div>
       </div>
@@ -174,7 +263,7 @@ export default function MembersPage({ onNavigate, user }) {
           </div>
 
           <div className="mpTbody">
-            {filteredMembers.map((m) => (
+            {currentMembers.map((m) => (
               <div
                 key={m.id}
                 className="mpRow"
@@ -208,30 +297,51 @@ export default function MembersPage({ onNavigate, user }) {
 
                 <div className="mpCell">
                   {m.activeLoans > 0 ? (
-                    <span className="mpPill mpPillCyan">{m.activeLoans} kitap</span>
+                    <span className="mpPill mpPillCyan">
+                      {m.activeLoans} kitap
+                    </span>
                   ) : (
                     <span className="mpDim">Kitap ödünç alınmamış.</span>
                   )}
-                  {m.debt > 0 ? <span className="mpPill mpPillRed">Borç: {m.debt}₺</span> : null}
+                  {m.debt > 0 ? (
+                    <span className="mpPill mpPillRed">Borç: {m.debt}₺</span>
+                  ) : null}
                 </div>
 
                 <div className="mpCell">
-                  <span className={`mpPill ${m.status === "Aktif" ? "mpPillGreen" : "mpPillRed"}`}>
+                  <span
+                    className={`mpPill ${m.status === "Aktif" ? "mpPillGreen" : "mpPillRed"}`}
+                  >
                     {m.status}
                   </span>
                 </div>
 
                 <div className="mpCell right">
-                  <div className="mpActions" onClick={(e) => e.stopPropagation()}>
-                    <button className="mpIconBtn cyan" type="button" onClick={() => onNavigate?.("members", `detail-${m.id}`)}>
+                  <div
+                    className="mpActions"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      className="mpIconBtn cyan"
+                      type="button"
+                      onClick={() => onNavigate?.("members", `detail-${m.id}`)}
+                    >
                       <Eye size={16} />
                     </button>
 
-                    <button className="mpIconBtn purple" type="button" onClick={() => openEdit(m)}>
+                    <button
+                      className="mpIconBtn purple"
+                      type="button"
+                      onClick={() => openEdit(m)}
+                    >
                       <Edit size={16} />
                     </button>
 
-                    <button className="mpIconBtn red" type="button" onClick={() => requestDelete(m)}>
+                    <button
+                      className="mpIconBtn red"
+                      type="button"
+                      onClick={() => requestDelete(m)}
+                    >
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -244,16 +354,44 @@ export default function MembersPage({ onNavigate, user }) {
             ) : null}
           </div>
         </div>
-
-        {/* Pagination bar (şimdilik statik UI) */}
+        {/* Pagination Bar - YENİ HALİ */}
         <div className="mpPaging">
           <div>
-            <b>{members.length}</b> üyeden <b>{filteredMembers.length}</b> tanesi gösteriliyor.
+            Toplam <b>{filteredMembers.length}</b> üyeden{" "}
+            <b>
+              {filteredMembers.length > 0 ? indexOfFirstItem + 1 : 0} -{" "}
+              {Math.min(indexOfLastItem, filteredMembers.length)}
+            </b>{" "}
+            arası gösteriliyor.
           </div>
+
           <div className="mpPagingBtns">
-            <button className="mpOutlineBtn" type="button">Önceki</button>
-            <button className="mpPageBtn" type="button">1</button>
-            <button className="mpOutlineBtn" type="button">Sonraki</button>
+            <button
+              className="mpOutlineBtn"
+              type="button"
+              onClick={() => changePage(currentPage - 1)}
+              disabled={currentPage === 1}
+              style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
+            >
+              Önceki
+            </button>
+
+            <button className="mpPageBtn" type="button">
+              {currentPage} / {totalPages || 1}
+            </button>
+
+            <button
+              className="mpOutlineBtn"
+              type="button"
+              onClick={() => changePage(currentPage + 1)}
+              disabled={currentPage === totalPages || totalPages === 0}
+              style={{
+                opacity:
+                  currentPage === totalPages || totalPages === 0 ? 0.5 : 1,
+              }}
+            >
+              Sonraki
+            </button>
           </div>
         </div>
       </div>
@@ -264,10 +402,16 @@ export default function MembersPage({ onNavigate, user }) {
           <div className="mpModal">
             <div className="mpModalHead">
               <div>
-                <div className="mpModalTitle">{formMode === "add" ? "Yeni Üye" : "Üye Güncelle"}</div>
-                <div className="mpModalSub">Ad, Soyad, Telefon, Email zorunlu.</div>
+                <div className="mpModalTitle">
+                  {formMode === "add" ? "Yeni Üye" : "Üye Güncelle"}
+                </div>
+                <div className="mpModalSub">
+                  Ad, Soyad, Telefon, Email zorunlu.
+                </div>
               </div>
-              <button className="mpX" type="button" onClick={closeForm}>✕</button>
+              <button className="mpX" type="button" onClick={closeForm}>
+                ✕
+              </button>
             </div>
 
             <div className="mpModalBody">
@@ -277,7 +421,9 @@ export default function MembersPage({ onNavigate, user }) {
                   <input
                     className="mpInput2"
                     value={editingMember.ad}
-                    onChange={(e) => setEditingMember({ ...editingMember, ad: e.target.value })}
+                    onChange={(e) =>
+                      setEditingMember({ ...editingMember, ad: e.target.value })
+                    }
                   />
                 </div>
                 <div className="mpField">
@@ -285,7 +431,12 @@ export default function MembersPage({ onNavigate, user }) {
                   <input
                     className="mpInput2"
                     value={editingMember.soyad}
-                    onChange={(e) => setEditingMember({ ...editingMember, soyad: e.target.value })}
+                    onChange={(e) =>
+                      setEditingMember({
+                        ...editingMember,
+                        soyad: e.target.value,
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -296,7 +447,12 @@ export default function MembersPage({ onNavigate, user }) {
                   <input
                     className="mpInput2"
                     value={editingMember.phone}
-                    onChange={(e) => setEditingMember({ ...editingMember, phone: e.target.value })}
+                    onChange={(e) =>
+                      setEditingMember({
+                        ...editingMember,
+                        phone: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div className="mpField">
@@ -304,7 +460,12 @@ export default function MembersPage({ onNavigate, user }) {
                   <input
                     className="mpInput2"
                     value={editingMember.email}
-                    onChange={(e) => setEditingMember({ ...editingMember, email: e.target.value })}
+                    onChange={(e) =>
+                      setEditingMember({
+                        ...editingMember,
+                        email: e.target.value,
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -315,7 +476,12 @@ export default function MembersPage({ onNavigate, user }) {
                   <input
                     className="mpInput2"
                     value={editingMember.studentId}
-                    onChange={(e) => setEditingMember({ ...editingMember, studentId: e.target.value })}
+                    onChange={(e) =>
+                      setEditingMember({
+                        ...editingMember,
+                        studentId: e.target.value,
+                      })
+                    }
                   />
                 </div>
 
@@ -324,18 +490,33 @@ export default function MembersPage({ onNavigate, user }) {
                   <select
                     className="mpSelect2"
                     value={editingMember.status}
-                    onChange={(e) => setEditingMember({ ...editingMember, status: e.target.value })}
+                    onChange={(e) =>
+                      setEditingMember({
+                        ...editingMember,
+                        status: e.target.value,
+                      })
+                    }
                   >
-                    <option value="Active">Aktif</option>
-                    <option value="Suspended">Donduruldu</option>
+                    <option value="Aktif">Aktif</option>
+                    <option value="Donduruldu">Donduruldu</option>
                   </select>
                 </div>
               </div>
             </div>
 
             <div className="mpModalFoot">
-              <button className="mpOutlineBtn" type="button" onClick={closeForm}>Cancel</button>
-              <button className="mpPrimaryBtn2" type="button" onClick={saveMember}>
+              <button
+                className="mpOutlineBtn"
+                type="button"
+                onClick={closeForm}
+              >
+                Cancel
+              </button>
+              <button
+                className="mpPrimaryBtn2"
+                type="button"
+                onClick={saveMember}
+              >
                 {formMode === "add" ? "Create" : "Save"}
               </button>
             </div>
@@ -354,14 +535,28 @@ export default function MembersPage({ onNavigate, user }) {
                   <b>{fullName(confirm.member)}</b> silinsin mi?
                 </div>
               </div>
-              <button className="mpX" type="button" onClick={() => setConfirm({ open: false, member: null })}>✕</button>
+              <button
+                className="mpX"
+                type="button"
+                onClick={() => setConfirm({ open: false, member: null })}
+              >
+                ✕
+              </button>
             </div>
 
             <div className="mpModalFoot">
-              <button className="mpOutlineBtn" type="button" onClick={() => setConfirm({ open: false, member: null })}>
+              <button
+                className="mpOutlineBtn"
+                type="button"
+                onClick={() => setConfirm({ open: false, member: null })}
+              >
                 Vazgeç
               </button>
-              <button className="mpDangerBtn" type="button" onClick={confirmDelete}>
+              <button
+                className="mpDangerBtn"
+                type="button"
+                onClick={confirmDelete}
+              >
                 Sil
               </button>
             </div>

@@ -78,7 +78,9 @@ CREATE PROCEDURE sp_UyeOzetRapor (
 BEGIN
     SELECT 
         u.OgrenciNo,
-        u.AdSoyad,
+        u.Ad,
+        u.Soyad,
+        u.Durum,
         (SELECT COUNT(*) FROM OduncIslemleri WHERE UyeID = p_UyeID) AS ToplamAlinanKitap,
         (SELECT COUNT(*) FROM OduncIslemleri WHERE UyeID = p_UyeID AND TeslimTarihi IS NULL) AS TeslimEdilmeyenKitap,
         u.ToplamBorc AS GuncelBorcTutari
