@@ -12,11 +12,11 @@ import {
 import "../pages/MembersPage.css";
 
 const initialMembers = [
-  { id: 1, ad: "Ahmet", soyad: "Yılmaz", studentId: "20210001", email: "ahmet.yilmaz@university.edu", phone: "+90 532 123 4567", activeLoans: 2, debt: 0, status: "Active" },
-  { id: 2, ad: "Zeynep", soyad: "Kaya", studentId: "20210002", email: "zeynep.kaya@university.edu", phone: "+90 533 234 5678", activeLoans: 1, debt: 0, status: "Active" },
-  { id: 3, ad: "Mehmet", soyad: "Demir", studentId: "20200155", email: "mehmet.demir@university.edu", phone: "+90 534 345 6789", activeLoans: 3, debt: 40, status: "Active" },
-  { id: 4, ad: "Ayşe", soyad: "Şahin", studentId: "20210003", email: "ayse.sahin@university.edu", phone: "+90 535 456 7890", activeLoans: 0, debt: 0, status: "Active" },
-  { id: 5, ad: "Can", soyad: "Öztürk", studentId: "20190088", email: "can.ozturk@university.edu", phone: "+90 536 567 8901", activeLoans: 1, debt: 120, status: "Suspended" },
+  { id: 1, ad: "Ahmet", soyad: "Yılmaz", studentId: "20210001", email: "ahmet.yilmaz@university.edu", phone: "+90 532 123 4567", activeLoans: 2, debt: 0, status: "Aktif" },
+  { id: 2, ad: "Zeynep", soyad: "Kaya", studentId: "20210002", email: "zeynep.kaya@university.edu", phone: "+90 533 234 5678", activeLoans: 1, debt: 0, status: "Aktif" },
+  { id: 3, ad: "Mehmet", soyad: "Demir", studentId: "20200155", email: "mehmet.demir@university.edu", phone: "+90 534 345 6789", activeLoans: 3, debt: 40, status: "Aktif" },
+  { id: 4, ad: "Ayşe", soyad: "Şahin", studentId: "20210003", email: "ayse.sahin@university.edu", phone: "+90 535 456 7890", activeLoans: 0, debt: 0, status: "Aktif" },
+  { id: 5, ad: "Can", soyad: "Öztürk", studentId: "20190088", email: "can.ozturk@university.edu", phone: "+90 536 567 8901", activeLoans: 1, debt: 120, status: "Donduruldu" },
 ];
 
 export default function MembersPage({ onNavigate, user }) {
@@ -129,14 +129,14 @@ export default function MembersPage({ onNavigate, user }) {
       {/* Top area */}
       <div className="mpTop">
         <div>
-          <div className="mpCrumb">Home <span>›</span> Members <span>›</span> <b>List</b></div>
-          <div className="mpTitle">Members</div>
+          <div className="mpCrumb">Ana Sayfa <span>›</span> Üyeler <span>›</span> <b>Liste</b></div>
+          <div className="mpTitle">Üyeler</div>
           <div className="mpHello">Hoş geldiniz, <b>{user?.name || "Admin User"}</b></div>
         </div>
 
         <button className="mpPrimaryBtn" type="button" onClick={openAdd}>
           <Plus size={18} />
-          Add Member
+          Üye Ekle
         </button>
       </div>
 
@@ -146,7 +146,7 @@ export default function MembersPage({ onNavigate, user }) {
           <Search size={16} />
           <input
             className="mpInput"
-            placeholder="Search by name, student ID, or email..."
+            placeholder="İsim, öğrenci no veya e-posta ile arayın..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -154,9 +154,9 @@ export default function MembersPage({ onNavigate, user }) {
 
         <div className="mpSelectWrap">
           <select className="mpSelect" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="all">All Status</option>
-            <option value="Active">Active</option>
-            <option value="Suspended">Suspended</option>
+            <option value="all">Tüm Durumlar</option>
+            <option value="Active">Aktif</option>
+            <option value="Suspended">Donduruldu</option>
           </select>
         </div>
       </div>
@@ -208,15 +208,15 @@ export default function MembersPage({ onNavigate, user }) {
 
                 <div className="mpCell">
                   {m.activeLoans > 0 ? (
-                    <span className="mpPill mpPillCyan">{m.activeLoans} loans</span>
+                    <span className="mpPill mpPillCyan">{m.activeLoans} kitap</span>
                   ) : (
-                    <span className="mpDim">No active loans</span>
+                    <span className="mpDim">Kitap ödünç alınmamış.</span>
                   )}
-                  {m.debt > 0 ? <span className="mpPill mpPillRed">Debt: {m.debt}₺</span> : null}
+                  {m.debt > 0 ? <span className="mpPill mpPillRed">Borç: {m.debt}₺</span> : null}
                 </div>
 
                 <div className="mpCell">
-                  <span className={`mpPill ${m.status === "Active" ? "mpPillGreen" : "mpPillRed"}`}>
+                  <span className={`mpPill ${m.status === "Aktif" ? "mpPillGreen" : "mpPillRed"}`}>
                     {m.status}
                   </span>
                 </div>
@@ -248,12 +248,12 @@ export default function MembersPage({ onNavigate, user }) {
         {/* Pagination bar (şimdilik statik UI) */}
         <div className="mpPaging">
           <div>
-            Showing <b>{filteredMembers.length}</b> of <b>{members.length}</b> members
+            <b>{members.length}</b> üyeden <b>{filteredMembers.length}</b> tanesi gösteriliyor.
           </div>
           <div className="mpPagingBtns">
-            <button className="mpOutlineBtn" type="button">Previous</button>
+            <button className="mpOutlineBtn" type="button">Önceki</button>
             <button className="mpPageBtn" type="button">1</button>
-            <button className="mpOutlineBtn" type="button">Next</button>
+            <button className="mpOutlineBtn" type="button">Sonraki</button>
           </div>
         </div>
       </div>
@@ -326,8 +326,8 @@ export default function MembersPage({ onNavigate, user }) {
                     value={editingMember.status}
                     onChange={(e) => setEditingMember({ ...editingMember, status: e.target.value })}
                   >
-                    <option value="Active">Active</option>
-                    <option value="Suspended">Suspended</option>
+                    <option value="Active">Aktif</option>
+                    <option value="Suspended">Donduruldu</option>
                   </select>
                 </div>
               </div>
