@@ -10,17 +10,29 @@ import {
   LogOut,
   Library,
 } from "lucide-react";
-import "../pages/Sidebar.css";
+import "../pages/SideBar.css";
 
 export default function Sidebar({ active = "members", onNavigate, user }) {
   const items = [
-    { key: "dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
+    {
+      key: "dashboard",
+      label: "Dashboard",
+      icon: <LayoutDashboard size={18} />,
+    },
     { key: "members", label: "Üye Yönetimi", icon: <Users size={18} /> },
     { key: "books", label: "Kitap Yönetimi", icon: <BookOpen size={18} /> },
     { key: "loans", label: "Ödünç İşlemleri", icon: <Repeat size={18} /> },
-    { key: "fines", label: "Ceza Görüntüleme", icon: <BadgeDollarSign size={18} /> },
+    {
+      key: "fines",
+      label: "Ceza Görüntüleme",
+      icon: <BadgeDollarSign size={18} />,
+    },
     { key: "reports", label: "Raporlar", icon: <BarChart3 size={18} /> },
-    { key: "dynamic-query", label: "Dinamik Sorgu Ekranı", icon: <SearchCode size={18} /> },
+    {
+      key: "dynamic-query",
+      label: "Dinamik Sorgu Ekranı",
+      icon: <SearchCode size={18} />,
+    },
   ];
 
   return (
@@ -59,7 +71,11 @@ export default function Sidebar({ active = "members", onNavigate, user }) {
           </div>
         </div>
 
-        <button className="sbLogout" type="button" onClick={() => onNavigate("logout")}>
+        <button
+          className="sbLogout"
+          type="button"
+          onClick={() => onNavigate("logout")}
+        >
           <LogOut size={18} />
           <span>Çıkış</span>
         </button>

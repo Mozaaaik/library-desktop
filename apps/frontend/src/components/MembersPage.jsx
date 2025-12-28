@@ -12,11 +12,11 @@ import {
 import "../pages/MembersPage.css";
 
 const initialMembers = [
-  { id: 1, ad: "Ahmet", soyad: "Yılmaz", studentId: "S2021001", email: "ahmet.yilmaz@university.edu", phone: "+90 532 123 4567", activeLoans: 2, debt: 0, status: "Active" },
-  { id: 2, ad: "Zeynep", soyad: "Kaya", studentId: "S2021002", email: "zeynep.kaya@university.edu", phone: "+90 533 234 5678", activeLoans: 1, debt: 0, status: "Active" },
-  { id: 3, ad: "Mehmet", soyad: "Demir", studentId: "S2020155", email: "mehmet.demir@university.edu", phone: "+90 534 345 6789", activeLoans: 3, debt: 40, status: "Active" },
-  { id: 4, ad: "Ayşe", soyad: "Şahin", studentId: "S2021003", email: "ayse.sahin@university.edu", phone: "+90 535 456 7890", activeLoans: 0, debt: 0, status: "Active" },
-  { id: 5, ad: "Can", soyad: "Öztürk", studentId: "S2019088", email: "can.ozturk@university.edu", phone: "+90 536 567 8901", activeLoans: 1, debt: 120, status: "Suspended" },
+  { id: 1, ad: "Ahmet", soyad: "Yılmaz", studentId: "20210001", email: "ahmet.yilmaz@university.edu", phone: "+90 532 123 4567", activeLoans: 2, debt: 0, status: "Active" },
+  { id: 2, ad: "Zeynep", soyad: "Kaya", studentId: "20210002", email: "zeynep.kaya@university.edu", phone: "+90 533 234 5678", activeLoans: 1, debt: 0, status: "Active" },
+  { id: 3, ad: "Mehmet", soyad: "Demir", studentId: "20200155", email: "mehmet.demir@university.edu", phone: "+90 534 345 6789", activeLoans: 3, debt: 40, status: "Active" },
+  { id: 4, ad: "Ayşe", soyad: "Şahin", studentId: "20210003", email: "ayse.sahin@university.edu", phone: "+90 535 456 7890", activeLoans: 0, debt: 0, status: "Active" },
+  { id: 5, ad: "Can", soyad: "Öztürk", studentId: "20190088", email: "can.ozturk@university.edu", phone: "+90 536 567 8901", activeLoans: 1, debt: 120, status: "Suspended" },
 ];
 
 export default function MembersPage({ onNavigate, user }) {
@@ -165,12 +165,12 @@ export default function MembersPage({ onNavigate, user }) {
       <div className="mpCard mpTableCard">
         <div className="mpTable">
           <div className="mpThead">
-            <div>Member</div>
-            <div>Student ID</div>
-            <div>Contact</div>
-            <div>Active Loans</div>
-            <div>Status</div>
-            <div className="right">Actions</div>
+            <div>Öğrenciler</div>
+            <div>Öğrenci No</div>
+            <div>İletişim Bilgileri</div>
+            <div>Ödünç Alınan</div>
+            <div>Durum</div>
+            <div className="right">İşlemler</div>
           </div>
 
           <div className="mpTbody">
