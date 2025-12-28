@@ -19,6 +19,11 @@ export default function MembersPage({ onNavigate, user }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
+  // Loans modal state
+  const [loanModal, setLoanModal] = useState({ open: false, member: null });
+  const [loans, setLoans] = useState([]);
+  const [loansLoading, setLoansLoading] = useState(false);
+
   // Arama yapılınca sayfayı 1'e döndür
   useEffect(() => {
     setCurrentPage(1);
@@ -204,6 +209,53 @@ export default function MembersPage({ onNavigate, user }) {
       setConfirm({ open: false, member: null });
     }
   };
+  const openLoans = async (m) => {
+    setLoanModal({ open: true, member: m });
+    setLoans([]);
+    setLoansLoading(true);
+
+    const url = `${API_URL}/${m.id}/loans?active=true`;
+    console.log("[openLoans] url =>", url);
+
+    try {
+      const res = await fetch(url);
+      console.log("[openLoans] status =>", res.status, res.statusText);
+      console.log("[openLoans] ok =>", res.ok);
+
+      const raw = await res.text(); // önce text al
+      console.log("[openLoans] raw body =>", raw);
+
+      // res.ok değilse body ile birlikte hata fırlat
+      if (!res.ok) throw new Error(`Loans fetch failed: ${res.status} ${raw}`);
+
+      // text'i json'a çevir
+      const data = raw ? JSON.parse(raw) : [];
+      console.log("[openLoans] parsed =>", data);
+
+      setLoans(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("[openLoans] error =>", err);
+      showToast("Ödünç kitaplar yüklenemedi ❌");
+      setLoans([]);
+    } finally {
+      setLoansLoading(false);
+    }
+  };
+
+
+  const closeLoans = () => {
+    setLoanModal({ open: false, member: null });
+    setLoans([]);
+    setLoansLoading(false);
+  };
+
+  const fmtDate = (d) => {
+    if (!d) return "—";
+    const dt = new Date(d);
+    if (Number.isNaN(dt.getTime())) return String(d);
+    return dt.toLocaleDateString("tr-TR");
+  };
+
 
   return (
     <div className="mp">
@@ -324,10 +376,11 @@ export default function MembersPage({ onNavigate, user }) {
                     <button
                       className="mpIconBtn cyan"
                       type="button"
-                      onClick={() => onNavigate?.("members", `detail-${m.id}`)}
+                      onClick={() => openLoans(m)}
                     >
                       <Eye size={16} />
                     </button>
+
 
                     <button
                       className="mpIconBtn purple"
@@ -523,6 +576,75 @@ export default function MembersPage({ onNavigate, user }) {
           </div>
         </div>
       )}
+
+      {/* Loans Modal */}
+      {loanModal.open && (
+        <div className="mpOverlay" role="dialog" aria-modal="true">
+          <div className="mpModal">
+            <div className="mpModalHead">
+              <div>
+                <div className="mpModalTitle">Ödünç Aldığı Kitaplar</div>
+                <div className="mpModalSub">
+                  <b>{fullName(loanModal.member)}</b> kullanıcısının aktif ödünçleri
+                </div>
+              </div>
+              <button className="mpX" type="button" onClick={closeLoans}>
+                ✕
+              </button>
+            </div>
+
+            <div className="mpModalBody">
+              {loansLoading ? (
+                <div className="mpEmpty">Yükleniyor...</div>
+              ) : loans.length === 0 ? (
+                <div className="mpEmpty">Aktif ödünç kitap yok.</div>
+              ) : (
+                <div className="mpTable loanTable">
+                  <div className="mpThead">
+                    <div>Kitap</div>
+                    <div>ISBN</div>
+                    <div>Veriliş</div>
+                    <div>Son Teslim</div>
+                    <div>Durum</div>
+                  </div>
+
+                  <div className="mpTbody">
+                    {loans.map((x) => (
+                      <div key={x.islemId} className="mpRow" role="row">
+                        <div className="mpCell">
+                          <div className="loanBook">
+                            <div className="loanTitle" title={x.title}>{x.title}</div>
+                            <div className="loanCat" title={x.category}>{x.category}</div>
+                          </div>
+                        </div>
+
+
+
+                        <div className="mpCell muted loanIsbn" title={x.isbn}>{x.isbn}</div>
+                        <div className="mpCell">{fmtDate(x.givenAt)}</div>
+                        <div className="mpCell">{fmtDate(x.dueAt)}</div>
+
+                        <div className="mpCell">
+                          <span className={`mpPill ${x.status === "Aktif" ? "mpPillCyan" : "mpPillGreen"}`}>
+                            {x.status}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mpModalFoot">
+              <button className="mpOutlineBtn" type="button" onClick={closeLoans}>
+                Kapat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/* Delete Confirm Modal */}
       {confirm.open && (

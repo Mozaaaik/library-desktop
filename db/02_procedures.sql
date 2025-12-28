@@ -91,20 +91,26 @@ END //
 
 -- 4. Kitap Arama Prosedürü
 -- Kitap başlığı, yazar veya ISBN içinde arama yapar.
+
+
 CREATE PROCEDURE sp_KitapAra (
     IN p_AramaMetni VARCHAR(100)
 )
 BEGIN
-    SELECT * FROM Kitaplar 
-    WHERE Baslik LIKE CONCAT('%', p_AramaMetni, '%')
-       OR Yazar LIKE CONCAT('%', p_AramaMetni, '%')
-       OR ISBN LIKE CONCAT('%', p_AramaMetni, '%');
+    SELECT * FROM Kitaplar k
+    LEFT JOIN Kategoriler kat 
+        ON kat.KategoriID = k.KategoriID
+    WHERE
+        k.Baslik LIKE CONCAT('%', p_AramaMetni, '%')
+        OR k.Yazar LIKE CONCAT('%', p_AramaMetni, '%')
+        OR k.ISBN LIKE CONCAT('%', p_AramaMetni, '%');
 END //
+
 
 
 -- 5. Kitap Ekle veya Güncelle Prosedürü
 -- ISBN sistemde varsa stoğu artırır, yoksa yeni kitap kaydı oluşturur.
-CREATE PROCEDURE sp_KitapEkleVeyaGuncelle (
+CREATE PROCEDURE sp_KitapEkle (
     IN p_Baslik VARCHAR(200),
     IN p_Yazar VARCHAR(100),
     IN p_Yayinevi VARCHAR(100),
@@ -127,5 +133,43 @@ BEGIN
         VALUES (p_KategoriID, p_Baslik, p_Yazar, p_Yayinevi, p_ISBN, p_Adet, p_Adet);
     END IF;
 END //
+
+-- 6. Kitap Güncelleme Prosedürü
+-- Kitap bilgilerini günceller, toplam adet emanet adedinden az olamaz
+CREATE PROCEDURE sp_KitapGuncelle (
+  IN p_KitapID INT,
+  IN p_Baslik VARCHAR(200),
+  IN p_Yazar VARCHAR(100),
+  IN p_Yayinevi VARCHAR(100),
+  IN p_ISBN VARCHAR(20),
+  IN p_KategoriID INT,
+  IN p_ToplamAdet INT
+)
+BEGIN
+  DECLARE v_Emanet INT DEFAULT 0;
+
+  -- emanet sayısı = toplam - mevcut (emanet sistemi yoksa da 0 kalır)
+  SELECT (ToplamAdet - MevcutAdet) INTO v_Emanet
+  FROM Kitaplar
+  WHERE KitapID = p_KitapID;
+
+  IF v_Emanet IS NULL THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Kitap bulunamadı';
+  END IF;
+
+  IF p_ToplamAdet < v_Emanet THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ToplamAdet emanet adedinden küçük olamaz';
+  END IF;
+
+  UPDATE Kitaplar
+  SET Baslik     = p_Baslik,
+      Yazar      = p_Yazar,
+      Yayinevi   = p_Yayinevi,
+      ISBN       = p_ISBN,
+      KategoriID = p_KategoriID,
+      ToplamAdet = p_ToplamAdet,
+      MevcutAdet = p_ToplamAdet - v_Emanet
+  WHERE KitapID = p_KitapID;
+END//
 
 DELIMITER ;

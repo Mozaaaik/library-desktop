@@ -27,6 +27,20 @@ export interface CreateMemberDto {
   status?: string;
 }
 
+interface LoanRow extends RowDataPacket {
+  IslemID: number;
+  UyeID: number;
+  KitapID: number;
+  Baslik: string;
+  Yazar: string;
+  ISBN: string;
+  Yayinevi: string;
+  KategoriAdi: string | null;
+  VerilisTarihi: any;
+  SonTeslimTarihi: any;
+  TeslimTarihi: any;
+}
+
 @Injectable()
 export class MembersService {
   async update(id: number, body: CreateMemberDto) {
@@ -107,5 +121,49 @@ export class MembersService {
     const sql = 'DELETE FROM Uyeler WHERE UyeID=?';
     const [result] = await pool.execute<ResultSetHeader>(sql, [id]);
     return result;
+  }
+
+
+  // ✅ NEW: Üyenin ödünç kitaplarını çek
+  async findLoans(memberId: number, onlyActive: boolean) {
+    if (!Number.isFinite(memberId)) return [];
+
+    const sql = `
+      SELECT
+        oi.IslemID,
+        oi.UyeID,
+        oi.KitapID,
+        k.Baslik,
+        k.Yazar,
+        k.ISBN,
+        k.Yayinevi,
+        kat.KategoriAdi,
+        oi.VerilisTarihi,
+        oi.SonTeslimTarihi,
+        oi.TeslimTarihi
+      FROM OduncIslemleri oi
+      INNER JOIN Kitaplar k ON k.KitapID = oi.KitapID
+      LEFT JOIN Kategoriler kat ON kat.KategoriID = k.KategoriID
+      WHERE oi.UyeID = ?
+      ${onlyActive ? 'AND oi.TeslimTarihi IS NULL' : ''}
+      ORDER BY oi.VerilisTarihi DESC
+    `;
+
+    const [rows] = await pool.execute<LoanRow[]>(sql, [memberId]);
+
+    // Frontend’e temiz isimlerle dönelim
+    return rows.map((r) => ({
+      islemId: r.IslemID,
+      kitapId: r.KitapID,
+      title: r.Baslik,
+      author: r.Yazar,
+      isbn: r.ISBN,
+      publisher: r.Yayinevi,
+      category: r.KategoriAdi ?? '—',
+      givenAt: r.VerilisTarihi,
+      dueAt: r.SonTeslimTarihi,
+      returnedAt: r.TeslimTarihi,
+      status: r.TeslimTarihi ? 'Teslim Edildi' : 'Aktif',
+    }));
   }
 }
