@@ -39,7 +39,7 @@
 /* ===== Buttons ===== */
 .primaryBtn {
   height: 44px;
-  border-radius: 14px;
+  border-radius: 999px;
   border: 0;
   cursor: pointer;
   color: white;
