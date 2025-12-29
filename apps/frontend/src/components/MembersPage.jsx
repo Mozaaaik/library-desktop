@@ -8,6 +8,10 @@ import {
   Edit,
   Trash2,
   User as UserIcon,
+  AlertTriangle, // Uyarı ikonu eklendi
+  CheckCircle,   // Başarı ikonu eklendi
+  XCircle,       // Hata ikonu eklendi
+  Info           // Bilgi ikonu eklendi
 } from "lucide-react";
 import "../pages/MembersPage.css";
 
@@ -34,7 +38,8 @@ export default function MembersPage({ onNavigate, user }) {
   const [formMode, setFormMode] = useState("add"); // add | edit
   const [editingMember, setEditingMember] = useState(null);
 
-  const [toast, setToast] = useState("");
+  // Toast artık sadece string değil, obje tutacak: { msg: string, type: 'success'|'error'|'warning' }
+  const [toast, setToast] = useState(null);
   const [confirm, setConfirm] = useState({ open: false, member: null });
 
   const API_URL = "http://localhost:3000/members";
@@ -47,7 +52,7 @@ export default function MembersPage({ onNavigate, user }) {
       setMembers(data);
     } catch (error) {
       console.error(error);
-      showToast("Veriler yüklenirken hata oluştu ❌");
+      showToast("Veriler yüklenirken hata oluştu", "error");
     }
   };
 
@@ -111,18 +116,17 @@ export default function MembersPage({ onNavigate, user }) {
     setEditingMember(null);
   };
 
-  const showToast = (msg) => {
-    setToast(msg);
-    window.setTimeout(() => setToast(""), 2200);
+  // Toast fonksiyonunu güncelledik, type parametresi alıyor
+  const showToast = (msg, type = "info") => {
+    setToast({ msg, type });
+    window.setTimeout(() => setToast(null), 2500);
   };
 
   const validateMember = (m) => {
-    // zorunlu: Ad, Soyad, Telefon, Email
     if (!m.ad.trim()) return "Ad zorunlu.";
     if (!m.soyad.trim()) return "Soyad zorunlu.";
     if (!m.phone.trim()) return "Telefon zorunlu.";
     if (!m.email.trim()) return "Email zorunlu.";
-    // basit email kontrol
     if (!m.email.includes("@")) return "Email formatı geçersiz.";
     return "";
   };
@@ -130,17 +134,19 @@ export default function MembersPage({ onNavigate, user }) {
   const saveMember = async () => {
     const err = validateMember(editingMember);
     if (err) {
-      showToast(err);
+      showToast(err, "warning");
       return;
     }
 
     let memberToSave = { ...editingMember };
 
+
     if (Number(memberToSave.debt) > 150) {
-      // Borç 150'den büyükse durumu otomatik olarak "Donduruldu" yap
       memberToSave.status = "Donduruldu";
-      showToast("Borç limiti aşıldığı için üye donduruldu ⚠️"); // Silinebilir
+      // Emoji yerine warning tipi gönderiyoruz
+      showToast("Borç limiti aşıldığı için üye donduruldu", "warning"); 
     }
+    // ------------------------------------------------
 
     try {
       if (formMode === "add") {
@@ -152,11 +158,11 @@ export default function MembersPage({ onNavigate, user }) {
         });
 
         if (res.ok) {
-          showToast("Üye eklendi");
-          fetchMembers(); // Listeyi yenile
+          showToast("Üye eklendi", "success");
+          fetchMembers(); 
           closeForm();
         } else {
-          showToast("Ekleme başarısız");
+          showToast("Ekleme başarısız", "error");
         }
       } else {
         // --- UPDATE (PUT) ---
@@ -167,23 +173,22 @@ export default function MembersPage({ onNavigate, user }) {
         });
 
         if (res.ok) {
-          showToast("Üye güncellendi");
-          fetchMembers(); // Listeyi yenile
+          showToast("Üye güncellendi", "success");
+          fetchMembers();
           closeForm();
         } else {
-          showToast("Güncelleme başarısız");
+          showToast("Güncelleme başarısız", "error");
         }
       }
     } catch (error) {
       console.error(error);
-      showToast("Sunucu hatası ⚠️");
+      showToast("Sunucu hatası", "error");
     }
   };
 
   const requestDelete = (m) => {
-    // şart: aktif ödünç veya borç varsa UYARI ver (silme yapma)
     if (m.activeLoans > 0 || m.debt > 0) {
-      showToast("Bu üyenin aktif ödünç kaydı veya borcu var. Silinemez.");
+      showToast("Bu üyenin aktif ödünç kaydı veya borcu var. Silinemez.", "warning");
       return;
     }
     setConfirm({ open: true, member: m });
@@ -197,45 +202,35 @@ export default function MembersPage({ onNavigate, user }) {
       });
 
       if (res.ok) {
-        showToast("Üye silindi 🗑️");
-        fetchMembers(); // Listeyi yenile
+        showToast("Üye silindi", "success");
+        fetchMembers(); 
       } else {
-        showToast("Silme işlemi başarısız ❌");
+        showToast("Silme işlemi başarısız", "error");
       }
     } catch (error) {
       console.error(error);
-      showToast("Sunucu hatası ⚠️");
+      showToast("Sunucu hatası", "error");
     } finally {
       setConfirm({ open: false, member: null });
     }
   };
+  
   const openLoans = async (m) => {
     setLoanModal({ open: true, member: m });
     setLoans([]);
     setLoansLoading(true);
 
     const url = `${API_URL}/${m.id}/loans?active=true`;
-    console.log("[openLoans] url =>", url);
 
     try {
       const res = await fetch(url);
-      console.log("[openLoans] status =>", res.status, res.statusText);
-      console.log("[openLoans] ok =>", res.ok);
-
-      const raw = await res.text(); // önce text al
-      console.log("[openLoans] raw body =>", raw);
-
-      // res.ok değilse body ile birlikte hata fırlat
-      if (!res.ok) throw new Error(`Loans fetch failed: ${res.status} ${raw}`);
-
-      // text'i json'a çevir
+      if (!res.ok) throw new Error(`Loans fetch failed`);
+      const raw = await res.text(); 
       const data = raw ? JSON.parse(raw) : [];
-      console.log("[openLoans] parsed =>", data);
-
       setLoans(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("[openLoans] error =>", err);
-      showToast("Ödünç kitaplar yüklenemedi ❌");
+      showToast("Ödünç kitaplar yüklenemedi", "error");
       setLoans([]);
     } finally {
       setLoansLoading(false);
@@ -256,6 +251,15 @@ export default function MembersPage({ onNavigate, user }) {
     return dt.toLocaleDateString("tr-TR");
   };
 
+  // Toast İkon Helper
+  const getToastIcon = (type) => {
+    switch(type) {
+        case 'success': return <CheckCircle size={20} />;
+        case 'error': return <XCircle size={20} />;
+        case 'warning': return <AlertTriangle size={20} />;
+        default: return <Info size={20} />;
+    }
+  };
 
   return (
     <div className="mp">
@@ -407,7 +411,7 @@ export default function MembersPage({ onNavigate, user }) {
             ) : null}
           </div>
         </div>
-        {/* Pagination Bar - YENİ HALİ */}
+        {/* Pagination Bar */}
         <div className="mpPaging">
           <div>
             Toplam <b>{filteredMembers.length}</b> üyeden{" "}
@@ -618,8 +622,6 @@ export default function MembersPage({ onNavigate, user }) {
                           </div>
                         </div>
 
-
-
                         <div className="mpCell muted loanIsbn" title={x.isbn}>{x.isbn}</div>
                         <div className="mpCell">{fmtDate(x.givenAt)}</div>
                         <div className="mpCell">{fmtDate(x.dueAt)}</div>
@@ -686,8 +688,15 @@ export default function MembersPage({ onNavigate, user }) {
         </div>
       )}
 
-      {/* Toast */}
-      {toast && <div className="mpToast">{toast}</div>}
+      {/* Toast - ARTIK IKONLU */}
+      {toast && (
+        <div className={`mpToast ${toast.type}`}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            {getToastIcon(toast.type)}
+            <span>{toast.msg}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

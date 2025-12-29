@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -10,6 +9,7 @@ import Sidebar from "./components/SideBar";
 // Pages
 import MembersPage from "./components/MembersPage";
 import BooksPage from "./components/BooksPage";
+import LoanPage from "./components/LoanPage";
 
 import "./pages/appShell.css";
 import FinesPage from "./components/FinesPage";
@@ -50,23 +50,23 @@ function App() {
           <MembersPage onNavigate={onNavigate} user={user} />
         )}
 
-        {page === "books" && (
-          <BooksPage onNavigate={onNavigate} user={user} />
-        )}
+        {page === "books" && <BooksPage onNavigate={onNavigate} user={user} />}
 
-        {page === "fines" && (
-          <FinesPage onNavigate={onNavigate} user={user} />
-        )}
+        {page === "loans" && <LoanPage user={user} />}
+
+        {page === "fines" && <FinesPage onNavigate={onNavigate} user={user} />}
 
         {page === "dashboard" && (
           <Dashboard onNavigate={onNavigate} user={user} />
         )}
 
-        {page !== "members" && page !== "books" && page !== "fines" && page !== "dashboard" &&   (
-          <div style={{ padding: 24, color: "#e5e7eb" }}>
-            TODO: {page}
-          </div>
-        )}
+        {page !== "members" &&
+          page !== "books" &&
+          page !== "loans" &&
+          page !== "fines" &&
+          page !== "dashboard" && (
+            <div style={{ padding: 24, color: "#e5e7eb" }}>TODO: {page}</div>
+          )}
       </main>
     </div>
   );
@@ -74,3 +74,4 @@ function App() {
 
 const container = document.getElementById("root");
 createRoot(container).render(<App />);
+
