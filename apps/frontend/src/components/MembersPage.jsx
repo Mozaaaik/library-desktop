@@ -614,7 +614,7 @@ export default function MembersPage({ onNavigate, user }) {
                         <div className="mpCell">
                           <div className="loanBook">
                             <div className="loanTitle" title={x.title}>{x.title}</div>
-                            <div className="loanCat" title={x.category}>{x.category}</div>
+                            <div className="loanCat" title={x.author}>{x.author}</div>
                           </div>
                         </div>
 

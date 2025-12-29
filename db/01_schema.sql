@@ -57,17 +57,29 @@ CREATE TABLE OduncIslemleri (
     FOREIGN KEY (PersonelID) REFERENCES Personel(PersonelID)
 );
 
--- 6. Cezalar Tablosu
+-- 6. Cezalar Tablosu (Güncel)
 CREATE TABLE Cezalar (
     CezaID INT AUTO_INCREMENT PRIMARY KEY,
-    IslemID INT, -- Hangi ödünç işlemine ait olduğu
-    UyeID INT,
+
+    IslemID INT NOT NULL, -- Hangi ödünç işlemine ait olduğu
+    UyeID   INT NOT NULL,
+
     Tutar DECIMAL(10, 2) NOT NULL,
     Aciklama VARCHAR(255),
-    OlusturmaTarihi DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    Durum ENUM('Unpaid','Paid') NOT NULL DEFAULT 'Unpaid',
+    OlusturmaTarihi DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    OdemeTarihi DATETIME NULL,
+
     FOREIGN KEY (IslemID) REFERENCES OduncIslemleri(IslemID),
-    FOREIGN KEY (UyeID) REFERENCES Uyeler(UyeID)
+    FOREIGN KEY (UyeID) REFERENCES Uyeler(UyeID),
+
+    INDEX idx_ceza_uye (UyeID),
+    INDEX idx_ceza_islem (IslemID),
+    INDEX idx_ceza_tarih (OlusturmaTarihi),
+    INDEX idx_ceza_durum (Durum)
 );
+
 
 -- 7. Sistem Logları Tablosu
 CREATE TABLE SistemLoglari (

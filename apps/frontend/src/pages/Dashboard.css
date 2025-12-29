@@ -1,0 +1,246 @@
+.db {
+  padding: 24px;
+  color: #eaf2ff;
+}
+
+.dbTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.dbTitle {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.dbHello {
+  margin-top: 6px;
+  opacity: 0.95;
+}
+
+.dbRole {
+  opacity: 0.7;
+  margin-left: 6px;
+}
+
+.dbSub {
+  margin-top: 8px;
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+.dbQuickBtns {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dbBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+  color: #eaf2ff;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.dbBtn:hover {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.06);
+}
+
+.dbBtn.primary {
+  border-color: rgba(0, 240, 255, 0.25);
+  background: rgba(0, 240, 255, 0.08);
+}
+
+.dbStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 12px 0 18px;
+}
+
+.dbStatCard {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+}
+
+.dbStatCard.warn {
+  border-color: rgba(255, 190, 0, 0.18);
+  background: rgba(255, 190, 0, 0.06);
+}
+
+.dbStatCard.danger {
+  border-color: rgba(255, 70, 90, 0.22);
+  background: rgba(255, 70, 90, 0.06);
+}
+
+.dbStatLabel {
+  font-size: 12px;
+  opacity: 0.7;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dbStatValue {
+  margin-top: 8px;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.dbGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.dbNavCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: 0.15s;
+}
+
+.dbNavCard:hover {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.05);
+}
+
+.dbNavIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.dbNavTitle {
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.dbNavDesc {
+  font-size: 13px;
+  opacity: 0.65;
+  margin-top: 2px;
+}
+
+.dbNavArrow {
+  margin-left: auto;
+  opacity: 0.6;
+}
+
+/* renk dokunuşları */
+.dbNavCard.cyan .dbNavIcon { background: rgba(0, 240, 255, 0.10); border-color: rgba(0, 240, 255, 0.18); }
+.dbNavCard.purple .dbNavIcon { background: rgba(160, 100, 255, 0.10); border-color: rgba(160, 100, 255, 0.18); }
+.dbNavCard.blue .dbNavIcon { background: rgba(80, 140, 255, 0.10); border-color: rgba(80, 140, 255, 0.18); }
+.dbNavCard.red .dbNavIcon { background: rgba(255, 70, 90, 0.10); border-color: rgba(255, 70, 90, 0.18); }
+.dbNavCard.green .dbNavIcon { background: rgba(40, 255, 160, 0.10); border-color: rgba(40, 255, 160, 0.18); }
+.dbNavCard.amber .dbNavIcon { background: rgba(255, 190, 0, 0.10); border-color: rgba(255, 190, 0, 0.18); }
+
+.dbPanels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.dbPanel {
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+}
+
+.dbPanelHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.dbPanelTitle {
+  font-weight: 800;
+}
+
+.dbLink {
+  background: transparent;
+  border: none;
+  color: #8fdcff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.9;
+}
+
+.dbList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dbRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.dbRowTitle {
+  font-weight: 800;
+}
+
+.dbRowSub {
+  font-size: 12px;
+  opacity: 0.65;
+  margin-top: 2px;
+}
+
+.dbPill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.dbPill.red { background: rgba(255,70,90,0.10); border-color: rgba(255,70,90,0.22); }
+.dbPill.green { background: rgba(40,255,160,0.10); border-color: rgba(40,255,160,0.22); }
+
+.dbEmpty {
+  opacity: 0.65;
+  padding: 14px;
+  text-align: center;
+}
+
+.dbNote {
+  margin-top: 16px;
+  font-size: 12px;
+  opacity: 0.6;
+}

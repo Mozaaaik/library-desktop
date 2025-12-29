@@ -172,4 +172,87 @@ BEGIN
   WHERE KitapID = p_KitapID;
 END//
 
+
+-- 7. Cezaları Listeleme Prosedürü
+-- İsteğe bağlı üye ve tarih aralığı filtreleme
+CREATE PROCEDURE sp_CezaListele(
+  IN p_UyeID INT,
+  IN p_From DATE,
+  IN p_To DATE
+)
+BEGIN
+  SELECT
+    c.CezaID,
+    c.UyeID,
+    CONCAT(u.Ad, ' ', u.Soyad) AS AdSoyad,
+    u.OgrenciNo,
+    c.IslemID,
+    k.Baslik AS KitapBaslik,
+    oi.SonTeslimTarihi,
+    c.Tutar,
+    c.Durum,
+    c.OlusturmaTarihi,
+    c.OdemeTarihi,
+    CASE
+      WHEN oi.SonTeslimTarihi IS NULL THEN 0
+      WHEN oi.TeslimTarihi IS NOT NULL THEN
+        GREATEST(DATEDIFF(DATE(oi.TeslimTarihi), DATE(oi.SonTeslimTarihi)), 0)
+      ELSE
+        GREATEST(DATEDIFF(CURDATE(), DATE(oi.SonTeslimTarihi)), 0)
+    END AS GecikmeGun
+  FROM Cezalar c
+  JOIN Uyeler u ON u.UyeID = c.UyeID
+  LEFT JOIN OduncIslemleri oi ON oi.IslemID = c.IslemID
+  LEFT JOIN Kitaplar k ON k.KitapID = oi.KitapID
+  WHERE (p_UyeID IS NULL OR c.UyeID = p_UyeID)
+    AND (p_From IS NULL OR DATE(c.OlusturmaTarihi) >= p_From)
+    AND (p_To   IS NULL OR DATE(c.OlusturmaTarihi) <= p_To)
+  ORDER BY c.OlusturmaTarihi DESC, c.CezaID DESC;
+END//
+
+-- 8. Ceza Detay Prosedürü
+-- Belirli bir cezanın detaylarını getirir
+CREATE PROCEDURE sp_CezaDetay(IN p_CezaID INT)
+BEGIN
+  SELECT
+    c.CezaID,
+    c.UyeID,
+    CONCAT(u.Ad, ' ', u.Soyad) AS AdSoyad,
+    u.OgrenciNo,
+    c.IslemID,
+    k.Baslik AS KitapBaslik,
+    oi.SonTeslimTarihi,
+    oi.TeslimTarihi,
+    c.Tutar,
+    c.Durum,
+    c.OlusturmaTarihi,
+    c.OdemeTarihi,
+    c.Aciklama,
+    CASE
+      WHEN oi.SonTeslimTarihi IS NULL THEN 0
+      WHEN oi.TeslimTarihi IS NOT NULL THEN
+        GREATEST(DATEDIFF(DATE(oi.TeslimTarihi), DATE(oi.SonTeslimTarihi)), 0)
+      ELSE
+        GREATEST(DATEDIFF(CURDATE(), DATE(oi.SonTeslimTarihi)), 0)
+    END AS GecikmeGun
+  FROM Cezalar c
+  JOIN Uyeler u ON u.UyeID = c.UyeID
+  LEFT JOIN OduncIslemleri oi ON oi.IslemID = c.IslemID
+  LEFT JOIN Kitaplar k ON k.KitapID = oi.KitapID
+  WHERE c.CezaID = p_CezaID
+  LIMIT 1;
+END//
+
+-- 9. Ceza Ödeme Prosedürü
+-- Belirli bir cezayı ödenmiş olarak işaretler
+CREATE PROCEDURE sp_CezaOde(IN p_CezaID INT)
+BEGIN
+  UPDATE Cezalar
+  SET Durum = 'Paid',
+      OdemeTarihi = NOW()
+  WHERE CezaID = p_CezaID;
+
+  SELECT ROW_COUNT() AS affected;
+END//
+
 DELIMITER ;
