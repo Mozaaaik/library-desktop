@@ -10,6 +10,7 @@ import Sidebar from "./components/SideBar";
 import MembersPage from "./components/MembersPage";
 import BooksPage from "./components/BooksPage";
 import LoanPage from "./components/LoanPage";
+import ReturnPage from "./components/ReturnPage";
 
 import "./pages/appShell.css";
 import FinesPage from "./components/FinesPage";
@@ -54,6 +55,8 @@ function App() {
 
         {page === "loans" && <LoanPage user={user} />}
 
+        {page === "returns" && <ReturnPage user={user} />}
+
         {page === "fines" && <FinesPage onNavigate={onNavigate} user={user} />}
 
         {page === "dashboard" && (
@@ -63,6 +66,7 @@ function App() {
         {page !== "members" &&
           page !== "books" &&
           page !== "loans" &&
+          page !== "returns" &&
           page !== "fines" &&
           page !== "dashboard" && (
             <div style={{ padding: 24, color: "#e5e7eb" }}>TODO: {page}</div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"; // useRef eklendi
+import React, { useState, useEffect, useRef } from "react";
 import {
   Search,
   User,
@@ -12,20 +12,17 @@ import {
 } from "lucide-react";
 import "../pages/LoanPage.css";
 
-// --- YENİ: Dışarı Tıklamayı Algılayan Hook ---
+// --- Dışarı Tıklamayı Algılayan Hook ---
 function useOnClickOutside(ref, handler) {
   useEffect(() => {
     const listener = (event) => {
-      // Eğer tıklanan yer ref'in (arama kutusunun) içindeyse hiçbir şey yapma
       if (!ref.current || ref.current.contains(event.target)) {
         return;
       }
       handler(event);
     };
-
     document.addEventListener("mousedown", listener);
     document.addEventListener("touchstart", listener);
-
     return () => {
       document.removeEventListener("mousedown", listener);
       document.removeEventListener("touchstart", listener);
@@ -48,14 +45,11 @@ export default function LoanPage({ user }) {
   const [isMemberFocused, setIsMemberFocused] = useState(false);
   const [isBookFocused, setIsBookFocused] = useState(false);
 
-  // --- YENİ: Referanslar ---
+  // --- Referanslar ---
   const memberWrapperRef = useRef(null);
   const bookWrapperRef = useRef(null);
 
-  // --- YENİ: Hook Kullanımı ---
-  // Üye arama kutusu dışına tıklanırsa kapat
   useOnClickOutside(memberWrapperRef, () => setIsMemberFocused(false));
-  // Kitap arama kutusu dışına tıklanırsa kapat
   useOnClickOutside(bookWrapperRef, () => setIsBookFocused(false));
 
   const [toast, setToast] = useState({ show: false, msg: "", type: "" });
@@ -63,14 +57,8 @@ export default function LoanPage({ user }) {
 
   // Verileri çek
   useEffect(() => {
-    fetch("http://localhost:3000/members")
-      .then((r) => r.json())
-      .then(setMembers)
-      .catch(console.error);
-    fetch("http://localhost:3000/books")
-      .then((r) => r.json())
-      .then(setBooks)
-      .catch(console.error);
+    fetch("http://localhost:3000/members").then((r) => r.json()).then(setMembers).catch(console.error);
+    fetch("http://localhost:3000/books").then((r) => r.json()).then(setBooks).catch(console.error);
   }, []);
 
   // Üye seçilince aktif borçları getir
@@ -129,20 +117,12 @@ export default function LoanPage({ user }) {
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "İşlem başarısız");
-      }
+      if (!res.ok) throw new Error(data.message || "İşlem başarısız");
 
       showToast("Ödünç işlemi başarılı!", "success");
-
       setSelectedBook(null);
       setBookSearch("");
-
-      fetch("http://localhost:3000/books")
-        .then((r) => r.json())
-        .then(setBooks);
-
+      fetch("http://localhost:3000/books").then((r) => r.json()).then(setBooks);
       const updatedMember = { ...selectedMember };
       setSelectedMember(updatedMember);
     } catch (error) {
@@ -153,32 +133,29 @@ export default function LoanPage({ user }) {
   };
 
   // --- FİLTRELEME ---
-  const filteredMembers = members
-    .filter((m) => {
-      const term = memberSearch.toLowerCase();
-      if (!term) return true;
-      
-      const fullName = `${m.ad || m.Ad} ${m.soyad || m.Soyad}`.toLowerCase();
-      const studentNo = (m.studentId || m.OgrenciNo || "").toLowerCase();
-      return fullName.includes(term) || studentNo.includes(term);
-    })
-    
+  const filteredMembers = members.filter((m) => {
+    const term = memberSearch.toLowerCase();
+    if (!term) return true;
+    const fullName = `${m.ad || m.Ad} ${m.soyad || m.Soyad}`.toLowerCase();
+    const studentNo = (m.studentId || m.OgrenciNo || "").toLowerCase();
+    return fullName.includes(term) || studentNo.includes(term);
+  });
 
-  const filteredBooks = books
-    .filter((b) => {
-      const term = bookSearch.toLowerCase();
-      if (!term) return true;
-
-      const title = (b.baslik || b.Baslik || "").toLowerCase();
-      const isbn = b.isbn || b.ISBN || "";
-      return title.includes(term) || isbn.includes(term);
-    })
-    
+  const filteredBooks = books.filter((b) => {
+    const term = bookSearch.toLowerCase();
+    if (!term) return true;
+    const title = (b.baslik || b.Baslik || "").toLowerCase();
+    const isbn = b.isbn || b.ISBN || "";
+    return title.includes(term) || isbn.includes(term);
+  });
 
   return (
     <div className="loan-page">
-      <div className="lp-header">
-        <h1>Ödünç Verme İşlemi</h1>
+      
+      {/* YENİ HEADER: BREADCRUMB + BAŞLIK */}
+      <div className="page-header-section">
+        <div className="breadcrumb">Ana Sayfa &gt; <span className="active">Ödünç İşlemleri</span></div>
+        <h1 className="page-title">Ödünç Verme İşlemi</h1>
       </div>
 
       <div className="lp-grid">
@@ -189,7 +166,7 @@ export default function LoanPage({ user }) {
           </div>
 
           {selectedMember ? (
-            <div className="selected-item-card member">
+            <div className="selected-item-card member animate-fade-in">
               <div className="info">
                 <h3>
                   {selectedMember.ad || selectedMember.Ad}{" "}
@@ -207,7 +184,6 @@ export default function LoanPage({ user }) {
               </button>
             </div>
           ) : (
-            // --- YENİ: Ref wrapper ---
             <div className="search-box" ref={memberWrapperRef}>
               <Search className="icon" size={18} />
               <input
@@ -215,7 +191,6 @@ export default function LoanPage({ user }) {
                 value={memberSearch}
                 onChange={(e) => setMemberSearch(e.target.value)}
                 onFocus={() => setIsMemberFocused(true)}
-                // onBlur kaldırıldı
               />
               {(memberSearch || isMemberFocused) && (
                 <div className="search-results">
@@ -226,7 +201,7 @@ export default function LoanPage({ user }) {
                       onClick={() => {
                         setSelectedMember(m);
                         setMemberSearch("");
-                        setIsMemberFocused(false); // Seçince listeyi kapat
+                        setIsMemberFocused(false);
                       }}
                     >
                       <b>
@@ -251,13 +226,9 @@ export default function LoanPage({ user }) {
                   {memberActiveLoans.map((l, i) => (
                     <li
                       key={i}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                      }}
+                      style={{ display: "flex", alignItems: "center", gap: "8px" }}
                     >
-                      <Book size={16} color="#60a5fa" />
+                      <Book size={16} className="text-blue-400" />
                       <span>{l.Baslik}</span>
                       <small style={{ marginLeft: "auto", color: "#64748b" }}>
                         {new Date(l.SonTeslimTarihi).toLocaleDateString()}
@@ -279,7 +250,7 @@ export default function LoanPage({ user }) {
           </div>
 
           {selectedBook ? (
-            <div className="selected-item-card book">
+            <div className="selected-item-card book animate-fade-in">
               <div className="info">
                 <h3>{selectedBook.baslik || selectedBook.Baslik}</h3>
                 <div className="stock-badge">
@@ -295,7 +266,6 @@ export default function LoanPage({ user }) {
               </button>
             </div>
           ) : (
-             // --- YENİ: Ref wrapper ---
             <div className="search-box" ref={bookWrapperRef}>
               <Search className="icon" size={18} />
               <input
@@ -303,7 +273,6 @@ export default function LoanPage({ user }) {
                 value={bookSearch}
                 onChange={(e) => setBookSearch(e.target.value)}
                 onFocus={() => setIsBookFocused(true)}
-                // onBlur kaldırıldı
               />
               
               {(bookSearch || isBookFocused) && (
@@ -313,14 +282,12 @@ export default function LoanPage({ user }) {
                     return (
                       <div
                         key={b.id || b.KitapID}
-                        className={`result-item ${
-                          stok === 0 ? "disabled" : ""
-                        }`}
+                        className={`result-item ${stok === 0 ? "disabled" : ""}`}
                         onClick={() => {
                           if (stok > 0) {
                             setSelectedBook(b);
                             setBookSearch("");
-                            setIsBookFocused(false); // Seçince listeyi kapat
+                            setIsBookFocused(false);
                           }
                         }}
                       >
@@ -349,7 +316,14 @@ export default function LoanPage({ user }) {
           disabled={!selectedMember || !selectedBook || loading}
           onClick={handleLend}
         >
-          {loading ? "İşleniyor..." : "Ödünç Ver"}
+          {loading ? (
+             <span>İşleniyor...</span>
+          ) : (
+             <>
+               <CheckCircle size={20} />
+               Ödünç İşlemini Tamamla
+             </>
+          )}
         </button>
       </div>
 

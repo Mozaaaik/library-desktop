@@ -4,6 +4,7 @@ import {
   Users,
   BookOpen,
   Repeat,
+  ClipboardCheck, // YENİ: İade ikonu eklendi
   BadgeDollarSign,
   BarChart3,
   SearchCode,
@@ -22,6 +23,7 @@ export default function Sidebar({ active = "members", onNavigate, user }) {
     { key: "members", label: "Üye Yönetimi", icon: <Users size={18} /> },
     { key: "books", label: "Kitap Yönetimi", icon: <BookOpen size={18} /> },
     { key: "loans", label: "Ödünç İşlemleri", icon: <Repeat size={18} /> },
+    { key: "returns", label: "İade İşlemleri", icon: <ClipboardCheck size = {18} />},
     {
       key: "fines",
       label: "Ceza Görüntüleme",

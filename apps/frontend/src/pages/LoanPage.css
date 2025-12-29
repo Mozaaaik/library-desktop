@@ -1,24 +1,47 @@
+/* --- GENEL SAYFA --- */
 .loan-page {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 24px;
+  background-color: #0b1120; /* Koyu Lacivert Arka Plan */
+  min-height: 100vh;
+  color: #f8fafc;
+  font-family: 'Inter', sans-serif;
 }
 
-.lp-header h1 { margin-bottom: 5px; color: #fff; }
-.lp-header p { color: #aaa; margin-bottom: 20px; font-family: monospace; }
+/* --- HEADER & BREADCRUMB --- */
+.page-header-section {
+  margin-bottom: 24px;
+}
+.breadcrumb {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+.breadcrumb .active {
+  color: #3b82f6; /* Mavi vurgu */
+}
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+}
 
+/* --- GRID YAPISI --- */
 .lp-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 24px;
 }
 
+/* --- KART STİLLERİ --- */
 .lp-card {
-  background: #1e293b;
+  background: #1e293b; /* Kart Rengi */
   border-radius: 12px;
-  padding: 20px;
+  padding: 24px;
   border: 1px solid #334155;
-  min-height: 300px;
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
 }
 
 .lp-card-title {
@@ -26,185 +49,167 @@
   align-items: center;
   gap: 10px;
   font-size: 1.1rem;
-  font-weight: bold;
-  color: #60a5fa; /* Mavi başlık */
-  margin-bottom: 15px;
+  font-weight: 600;
+  color: #60a5fa;
+  margin-bottom: 20px;
   border-bottom: 1px solid #334155;
-  padding-bottom: 10px;
+  padding-bottom: 12px;
 }
 
-/* Arama Kutusu */
+/* --- ARAMA KUTUSU --- */
 .search-box { position: relative; }
 .search-box input {
   width: 100%;
-  padding: 12px 12px 12px 40px;
+  padding: 14px 14px 14px 42px;
   border-radius: 8px;
   background: #0f172a;
   border: 1px solid #334155;
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+.search-box input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 .search-box .icon {
   position: absolute;
-  left: 12px;
-  top: 12px;
-  color: #94a3b8;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
 }
 
-/* Arama Sonuçları (Dropdown) */
+/* --- ARAMA SONUÇLARI --- */
 .search-results {
   position: absolute;
-  top: 100%;
+  top: 105%;
   left: 0;
   right: 0;
   background: #1e293b;
   border: 1px solid #475569;
   border-radius: 8px;
-  margin-top: 5px;
   z-index: 50;
-  max-height: 300px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  z-index: 10;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  max-height: 280px;
+  overflow-y: auto; /* Scroll burada devreye girer */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 .result-item {
-  padding: 10px;
+  padding: 12px 16px;
   border-bottom: 1px solid #334155;
   cursor: pointer;
   transition: 0.2s;
-  color: #f8fafc;
+  color: #cbd5e1;
+  font-size: 0.9rem;
 }
-.result-item:hover { background: #334155; }
-.result-item.disabled { opacity: 0.5; cursor: not-allowed; }
+.result-item:hover { background: #334155; color: #fff; }
+.result-item.disabled { opacity: 0.5; cursor: not-allowed; font-style: italic; text-align: center; }
 
-.res-row { display: flex; justify-content: space-between; }
-.stk-ok { color: #4ade80; font-size: 0.8rem; font-weight: bold; }
-.stk-no { color: #f87171; font-size: 0.8rem; font-weight: bold; }
+.res-row { display: flex; justify-content: space-between; align-items: center; }
+.stk-ok { color: #4ade80; font-size: 0.75rem; font-weight: bold; background: rgba(74, 222, 128, 0.1); padding: 2px 6px; border-radius: 4px; }
+.stk-no { color: #f87171; font-size: 0.75rem; font-weight: bold; }
 
-/* Seçilmiş Öğe Kartı */
+/* --- SEÇİLMİŞ ÖĞE KARTI --- */
 .selected-item-card {
   background: #0f172a;
-  border: 1px solid #60a5fa;
-  border-radius: 8px;
-  padding: 15px;
+  border: 1px solid #3b82f6;
+  border-radius: 12px;
+  padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.selected-item-card h3 { margin: 0 0 5px 0; color: #fff; }
-.selected-item-card span { display: block; color: #94a3b8; font-size: 0.9rem; }
-.status.green { color: #4ade80; }
-.status.red { color: #f87171; }
+.selected-item-card h3 { margin: 0 0 4px 0; color: #fff; font-size: 1rem; }
+.selected-item-card span, .stock-badge { color: #94a3b8; font-size: 0.85rem; }
+.stock-badge b { color: #fff; margin-left: 4px; }
 
 .remove-btn {
-  background: transparent;
-  border: none;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   color: #f87171;
   cursor: pointer;
-  padding: 5px;
+  padding: 8px;
+  border-radius: 6px;
+  transition: 0.2s;
 }
-.remove-btn:hover { background: rgba(248, 113, 113, 0.1); border-radius: 50%; }
+.remove-btn:hover { background: rgba(239, 68, 68, 0.2); color: #fff; }
 
-/* Aktif Kitaplar Listesi */
-.active-loans-list { margin-top: 20px; padding-top: 15px; border-top: 1px dashed #334155; }
-.active-loans-list h4 { font-size: 0.9rem; color: #ffffff; margin-bottom: 10px; }
-.active-loans-list ul { list-style: none; padding: 0; }
+/* --- AKTİF KİTAPLAR LİSTESİ --- */
+.active-loans-list { 
+  margin-top: auto; 
+  padding-top: 20px; 
+  border-top: 1px dashed #334155; 
+}
+.active-loans-list h4 { font-size: 0.85rem; color: #64748b; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+.active-loans-list ul { list-style: none; padding: 0; margin: 0; }
 .active-loans-list li {
   font-size: 0.9rem;
-  padding: 5px 0;
+  padding: 6px 0;
   color: #cbd5e1;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid transparent;
 }
+.text-blue-400 { color: #60a5fa; }
+.empty-text { color: #64748b; font-style: italic; font-size: 0.9rem; }
 
-/* Aksiyon Alanı */
+/* --- AKSİYON BUTONU --- */
 .lp-actions {
   margin-top: 30px;
   text-align: center;
 }
 .lend-btn {
-  background: linear-gradient(to right, #2563eb, #3b82f6);
+  background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
   color: white;
   border: none;
-  padding: 15px 50px;
-  font-size: 1.2rem;
-  border-radius: 8px;
+  padding: 16px 60px;
+  font-size: 1.1rem;
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: bold;
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-  transition: 0.3s;
-}
-.lend-btn:disabled { background: #334155; cursor: not-allowed; box-shadow: none; opacity: 0.7; }
-.lend-btn:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5); }
-
-.hint { margin-top: 10px; color: #64748b; font-size: 0.9rem; }
-
-/* Toast */
-.lp-toast {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  padding: 15px 25px;
-  border-radius: 8px;
-  display: flex;
+  font-weight: 600;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  color: white;
-  font-weight: bold;
+  gap: 12px;
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.lend-btn:disabled { 
+  background: #334155; cursor: not-allowed; box-shadow: none; opacity: 0.6; color: #94a3b8; 
+}
+.lend-btn:not(:disabled):hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 8px 25px rgba(6, 182, 212, 0.5); 
+}
+
+/* --- TOAST --- */
+.lp-toast {
+  position: fixed; bottom: 30px; right: 30px;
+  padding: 16px 24px; border-radius: 8px;
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 600; color: #fff;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   animation: slideIn 0.3s ease;
+  z-index: 100;
 }
-.lp-toast.success { background: #059669; }
-.lp-toast.error { background: #dc2626; }
+.lp-toast.success { background: #059669; border: 1px solid #10b981; }
+.lp-toast.error { background: #dc2626; border: 1px solid #ef4444; }
+.lp-toast.warning { background: #d97706; border: 1px solid #f59e0b; }
 
-@keyframes slideIn {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
+@keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.animate-fade-in { animation: slideIn 0.3s ease-out; }
 
-.stock-badge {
-  color: #94a3b8;
-  font-size: 0.9rem;
-  margin-top: 4px;
-}
-
-.stock-badge b {
-  color: #ffffff; 
-  font-weight: bold;
-}
-
-.empty-text {
-  color: #94a3b8;      
-  font-style: italic;  
-  margin-top: 15px;    
-  font-size: 0.95rem;
-}
-
-
+/* --- SCROLLBAR ÖZELLEŞTİRME --- */
 *::-webkit-scrollbar {
-  width: 8px;              /* Dikey scrollbar genişliği */
-  height: 8px;             /* Yatay scrollbar yüksekliği */
+  width: 6px;
+  height: 6px;
 }
-
-/* Scrollbar'ın arka planı (Track) */
 *::-webkit-scrollbar-track {
-  background: transparent; /* Arka plan şeffaf olsun, uygulamanın rengini alsın */
-}
-
-/* Kaydıran Çubuk (Thumb) */
-*::-webkit-scrollbar-thumb {
-  background-color: #334155;      
-  border-radius: 99px;            /* Tam oval (hap şeklinde) görünüm */
-  border: 2px solid #1e293b;      /* ÖNEMLİ: Çubuğun etrafına "boşluk" hissi verir */
-}
-
-/* Üzerine gelince (Hover) */
-*::-webkit-scrollbar-thumb:hover {
-  background-color: #475569;     
-}
-
-/* Köşe birleşim noktası (Hem yatay hem dikey varsa) */
-*::-webkit-scrollbar-corner {
   background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #334155;
+  border-radius: 10px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #475569;
 }
