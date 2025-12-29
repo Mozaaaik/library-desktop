@@ -409,7 +409,6 @@ export function DynamicQueryPage() {
                                                     <th>Kategori</th>
                                                     <th>Yayınevi</th>
                                                     <th>ISBN</th>
-                                                    <th>Toplam</th>
                                                     <th>Mevcut</th>
                                                 </tr>
                                             </thead>
@@ -427,7 +426,6 @@ export function DynamicQueryPage() {
                                                         </td>
                                                         <td>{book.Yayinevi || "-"}</td>
                                                         <td className="dq-mono">{book.ISBN || "-"}</td>
-                                                        <td>{book.ToplamAdet ?? "-"}</td>
                                                         <td>
                                                             {Number(book.MevcutAdet) > 0 ? (
                                                                 <span className="dq-badge dq-badge--green">
