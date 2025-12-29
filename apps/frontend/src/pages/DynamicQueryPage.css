@@ -434,3 +434,20 @@
   color: rgba(148,163,184,.85);
   font-size: 13px;
 }
+
+.dq-export {
+  position: relative;
+  z-index: 50;
+  pointer-events: auto;
+}
+
+.dq-btn--export {
+  pointer-events: auto;
+}
+
+/* Eğer header üstünde dekor/overlay varsa tıklamayı çalmasın */
+.dq-resultsHeader::before,
+.dq-resultsHeader::after {
+  pointer-events: none;
+}
+

@@ -33,9 +33,12 @@
   "dependencies": {
     "@vitejs/plugin-react": "^5.1.2",
     "electron-squirrel-startup": "^1.0.1",
+    "file-saver": "^2.0.5",
     "lucide-react": "^0.562.0",
+    "pdfmake": "^0.2.21",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "sonner": "^2.0.7"
+    "sonner": "^2.0.7",
+    "xlsx": "^0.18.5"
   }
 }
