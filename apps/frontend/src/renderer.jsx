@@ -76,7 +76,8 @@ function App() {
           page !== "returns" &&
           page !== "fines" &&
           page !== "dashboard" &&
-          page !== "dynamic-query" && (
+          page !== "dynamic-query" &&
+          page !== "reports" && (
             <div style={{ padding: 24, color: "#e5e7eb" }}>TODO: {page}</div>
           )}
       </main>
