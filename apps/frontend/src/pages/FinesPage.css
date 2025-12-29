@@ -388,3 +388,21 @@
 /*  güvenlik: filter alanında tıklanmazlık / kırpılma olmasın */
 .fpFilters { overflow: visible; }
 .fpField { overflow: visible; }
+
+.fpSortTh {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.fpSortIcon {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.85;
+}

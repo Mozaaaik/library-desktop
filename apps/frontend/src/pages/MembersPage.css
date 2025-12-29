@@ -239,6 +239,8 @@
   font-weight: 750;
   border: 1px solid transparent;
   margin-right: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .mpPillCyan {
