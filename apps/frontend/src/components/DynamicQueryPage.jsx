@@ -110,7 +110,7 @@ export function DynamicQueryPage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${API}/categories`);
+        const res = await fetch(`${API}/books/categories`);
         if (!res.ok) return;
         const data = await res.json();
         if (Array.isArray(data)) setCategories(data);
@@ -120,7 +120,8 @@ export function DynamicQueryPage() {
     })();
   }, []);
 
-  const toggleSortOrder = () => setSortOrder((p) => (p === "asc" ? "desc" : "asc"));
+  const toggleSortOrder = () =>
+    setSortOrder((p) => (p === "asc" ? "desc" : "asc"));
 
   const executeQuery = async () => {
     setIsLoading(true);
@@ -146,7 +147,9 @@ export function DynamicQueryPage() {
       setCurrentPage(1);
       toast.success(`${arr.length} kitap bulundu`);
     } catch (e) {
-      toast.error("Dinamik sorgu endpointi yok / hata var. Backend’i kontrol et.");
+      toast.error(
+        "Dinamik sorgu endpointi yok / hata var. Backend’i kontrol et."
+      );
       setResults([]);
     } finally {
       setIsLoading(false);
@@ -174,30 +177,34 @@ export function DynamicQueryPage() {
   const exportToExcel = () => {
     if (!hasSearched) return toast.error("Önce sorguyu çalıştır.");
     const cols = [
-      { key: "bookName", label: "Kitap Adı" },
-      { key: "author", label: "Yazar" },
-      { key: "category", label: "Kategori" },
-      { key: "publisher", label: "Yayınevi" },
-      { key: "isbn", label: "ISBN" },
-      { key: "totalCount", label: "Toplam Adet" },
-      { key: "availableCount", label: "Mevcut Adet" },
+      { key: "Baslik", label: "Kitap Adı" },
+      { key: "Yazar", label: "Yazar" },
+      { key: "KategoriAdi", label: "Kategori" },
+      { key: "Yayinevi", label: "Yayınevi" },
+      { key: "ISBN", label: "ISBN" },
+      { key: "MevcutAdet", label: "Mevcut Adet" },
     ];
-    downloadBlob("dinamik_sorgu_kitaplar.csv", toCsv(results, cols), "text/csv;charset=utf-8");
-    toast.success("Excel (CSV) indiriliyor ✅");
+
+    const csvContent = toCsv(results, cols);
+    const BOM = "\uFEFF"; // Excel'in Türkçe karakterleri tanıması için şart
+
+    downloadBlob(
+      "kitap_raporu.csv",
+      BOM + csvContent,
+      "text/csv;charset=utf-8"
+    );
+    toast.success("Excel indiriliyor ✅");
   };
 
   const exportToPDF = () => {
     if (!hasSearched) return toast.error("Önce sorguyu çalıştır.");
     const cols = [
-      { key: "bookName", label: "Kitap Adı" },
-      { key: "author", label: "Yazar" },
-      { key: "category", label: "Kategori" },
-      { key: "publisher", label: "Yayınevi" },
-      { key: "isbn", label: "ISBN" },
-      { key: "availableCount", label: "Mevcut" },
+      { key: "Baslik", label: "Kitap Adı" },
+      { key: "Yazar", label: "Yazar" },
+      { key: "KategoriAdi", label: "Kategori" },
+      { key: "MevcutAdet", label: "Adet" },
     ];
-    printTablePdf("Dinamik Sorgu - Kitap Listesi", cols, results);
-    toast.success("PDF yazdırma ekranı açıldı ✅");
+    printTablePdf("Kitap Sorgu Sonuçları", cols, results);
   };
 
   const canExport = hasSearched && results.length > 0;
@@ -215,7 +222,9 @@ export function DynamicQueryPage() {
         <div className="dq-headerRow">
           <div>
             <h1 className="dq-title">Dinamik Sorgu</h1>
-            <p className="dq-desc">Kitap arama ve listeleme için gelişmiş parametrik sorgu</p>
+            <p className="dq-desc">
+              Kitap arama ve listeleme için gelişmiş parametrik sorgu
+            </p>
           </div>
         </div>
       </div>
@@ -283,7 +292,11 @@ export function DynamicQueryPage() {
 
               <div className="dq-field">
                 <label className="dq-label">Sıralama</label>
-                <select className="dq-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                <select
+                  className="dq-select"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
                   <option value="Baslik">Kitap Adı</option>
                   <option value="Yazar">Yazar</option>
                   <option value="Yayinevi">Yayınevi</option>
@@ -291,14 +304,23 @@ export function DynamicQueryPage() {
                   <option value="MevcutAdet">Mevcut Adet</option>
                 </select>
 
-                <button type="button" className="dq-btn dq-btn--ghost" onClick={toggleSortOrder}>
+                <button
+                  type="button"
+                  className="dq-btn dq-btn--ghost"
+                  onClick={toggleSortOrder}
+                >
                   <ArrowUpDown className="dq-icon" />
                   {sortOrder === "asc" ? "Artan" : "Azalan"}
                 </button>
               </div>
 
               <div className="dq-actions">
-                <button type="button" className="dq-btn dq-btn--primary" onClick={executeQuery} disabled={isLoading}>
+                <button
+                  type="button"
+                  className="dq-btn dq-btn--primary"
+                  onClick={executeQuery}
+                  disabled={isLoading}
+                >
                   {isLoading ? (
                     <>
                       <Loader className="dq-icon dq-spin" />
@@ -312,7 +334,12 @@ export function DynamicQueryPage() {
                   )}
                 </button>
 
-                <button type="button" className="dq-btn dq-btn--icon" onClick={clearFilters} title="Temizle">
+                <button
+                  type="button"
+                  className="dq-btn dq-btn--icon"
+                  onClick={clearFilters}
+                  title="Temizle"
+                >
                   <X className="dq-icon" />
                 </button>
               </div>
@@ -328,18 +355,27 @@ export function DynamicQueryPage() {
                 <h3>Sonuçlar</h3>
                 {hasSearched && (
                   <p className="dq-subText">
-                    Bulunan sonuç: <span className="dq-accent">{results.length}</span>
+                    Bulunan sonuç:{" "}
+                    <span className="dq-accent">{results.length}</span>
                   </p>
                 )}
               </div>
 
               {canExport && (
                 <div className="dq-export">
-                  <button type="button" className="dq-btn dq-btn--export dq-btn--excel" onClick={exportToExcel}>
+                  <button
+                    type="button"
+                    className="dq-btn dq-btn--export dq-btn--excel"
+                    onClick={exportToExcel}
+                  >
                     <FileSpreadsheet className="dq-icon" />
                     Excel İndir
                   </button>
-                  <button type="button" className="dq-btn dq-btn--export dq-btn--pdf" onClick={exportToPDF}>
+                  <button
+                    type="button"
+                    className="dq-btn dq-btn--export dq-btn--pdf"
+                    onClick={exportToPDF}
+                  >
                     <FileText className="dq-icon" />
                     PDF İndir
                   </button>
@@ -382,20 +418,27 @@ export function DynamicQueryPage() {
 
                       <tbody>
                         {currentResults.map((book) => (
-                          <tr key={book.id}>
-                            <td className="dq-tdTitle">{book.bookName}</td>
-                            <td>{book.author || "-"}</td>
+                          <tr key={book.KitapID}>
+                            {/* bookName değil, Baslik kullanıyoruz */}
+                            <td className="dq-tdTitle">{book.Baslik}</td>
+                            <td>{book.Yazar || "-"}</td>
                             <td>
-                              <span className="dq-badge dq-badge--purple">{book.category || "-"}</span>
+                              <span className="dq-badge dq-badge--purple">
+                                {book.KategoriAdi || "-"}
+                              </span>
                             </td>
-                            <td>{book.publisher || "-"}</td>
-                            <td className="dq-mono">{book.isbn || "-"}</td>
-                            <td>{book.totalCount ?? "-"}</td>
+                            <td>{book.Yayinevi || "-"}</td>
+                            <td className="dq-mono">{book.ISBN || "-"}</td>
+                            <td>{book.ToplamAdet ?? "-"}</td>
                             <td>
-                              {Number(book.availableCount) > 0 ? (
-                                <span className="dq-badge dq-badge--green">{book.availableCount} adet</span>
+                              {Number(book.MevcutAdet) > 0 ? (
+                                <span className="dq-badge dq-badge--green">
+                                  {book.MevcutAdet} Adet
+                                </span>
                               ) : (
-                                <span className="dq-badge dq-badge--red">Yok</span>
+                                <span className="dq-badge dq-badge--red">
+                                  Yok
+                                </span>
                               )}
                             </td>
                           </tr>
@@ -414,7 +457,9 @@ export function DynamicQueryPage() {
                         <button
                           type="button"
                           className="dq-btn dq-btn--icon"
-                          onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                          onClick={() =>
+                            setCurrentPage(Math.max(1, currentPage - 1))
+                          }
                           disabled={currentPage === 1}
                         >
                           <ChevronLeft className="dq-icon" />
@@ -423,7 +468,11 @@ export function DynamicQueryPage() {
                         <button
                           type="button"
                           className="dq-btn dq-btn--icon"
-                          onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                          onClick={() =>
+                            setCurrentPage(
+                              Math.min(totalPages, currentPage + 1)
+                            )
+                          }
                           disabled={currentPage === totalPages}
                         >
                           <ChevronRight className="dq-icon" />

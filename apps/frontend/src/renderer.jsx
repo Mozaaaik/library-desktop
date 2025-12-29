@@ -75,7 +75,8 @@ function App() {
           page !== "loans" &&
           page !== "returns" &&
           page !== "fines" &&
-          page !== "dashboard" && (
+          page !== "dashboard" &&
+          page !== "dynamic-query" && (
             <div style={{ padding: 24, color: "#e5e7eb" }}>TODO: {page}</div>
           )}
       </main>
