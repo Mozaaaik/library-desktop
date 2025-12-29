@@ -7,9 +7,10 @@ import { LoansModule } from './loans/loans.module';
 import { MembersModule } from './members/members.module';
 import { FinesModule } from './fines/fines.module';
 import { ReturnsModule } from './returns/returns.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
-  imports: [AuthModule, BooksModule, LoansModule, MembersModule, FinesModule, ReturnsModule],
+  imports: [AuthModule, BooksModule, LoansModule, MembersModule, FinesModule, ReturnsModule, ReportsModule],
   controllers: [AppController],
   providers: [AppService],
 })

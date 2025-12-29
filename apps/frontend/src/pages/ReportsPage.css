@@ -1,0 +1,520 @@
+/* ====== PAGE WRAP ====== */
+.repPage {
+  padding: 22px;
+  color: #e5e7eb;
+}
+
+.repHeader {
+  margin-bottom: 18px;
+}
+
+.repCrumbs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.6);
+  margin-bottom: 6px;
+}
+.repCrumbs .sep {
+  opacity: 0.55;
+}
+.repCrumbs .active {
+  color: rgba(34, 211, 238, 0.95);
+}
+
+.repTitle {
+  font-size: 34px;
+  line-height: 1.1;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.4px;
+}
+
+.repSub {
+  margin: 0 0 14px 0;
+  color: rgba(226, 232, 240, 0.65);
+  font-size: 14px;
+}
+
+/* ====== TABS ====== */
+.repTabs {
+  display: inline-flex;
+  gap: 10px;
+  padding: 6px;
+  border-radius: 18px;
+  border: 1px solid rgba(30, 41, 59, 0.9);
+  background: rgba(18, 22, 31, 0.65);
+  backdrop-filter: blur(18px);
+}
+
+.repTab {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(226, 232, 240, 0.75);
+  cursor: pointer;
+  transition: all 160ms ease;
+  font-size: 14px;
+}
+.repTab:hover {
+  background: rgba(148, 163, 184, 0.07);
+}
+.repTab.active {
+  color: #e5e7eb;
+  border-color: rgba(148, 163, 184, 0.14);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.repTab.active.cyan {
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.16), rgba(6, 182, 212, 0.12));
+  border-color: rgba(34, 211, 238, 0.25);
+}
+.repTab.active.red {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.16), rgba(220, 38, 38, 0.12));
+  border-color: rgba(239, 68, 68, 0.25);
+}
+.repTab.active.purple {
+  background: linear-gradient(90deg, rgba(168, 85, 247, 0.18), rgba(147, 51, 234, 0.12));
+  border-color: rgba(168, 85, 247, 0.25);
+}
+
+/* ====== GRID ====== */
+.repGrid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.repRight {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ====== CARD BASE ====== */
+.repCard {
+  border-radius: 24px;
+  border: 1px solid rgba(30, 41, 59, 0.9);
+  background: rgba(18, 22, 31, 0.7);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+}
+
+/* ====== FILTERS CARD ====== */
+.repFilters {
+  padding: 18px;
+  position: sticky;
+  top: 18px;
+}
+
+.repCardHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.repHeadIcon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(10, 14, 26, 0.75);
+}
+.repHeadIcon.cyan {
+  border-color: rgba(34, 211, 238, 0.22);
+  box-shadow: 0 16px 40px rgba(34, 211, 238, 0.12);
+  color: rgba(34, 211, 238, 0.95);
+}
+.repHeadIcon.red {
+  border-color: rgba(239, 68, 68, 0.22);
+  box-shadow: 0 16px 40px rgba(239, 68, 68, 0.12);
+  color: rgba(239, 68, 68, 0.95);
+}
+.repHeadIcon.purple {
+  border-color: rgba(168, 85, 247, 0.22);
+  box-shadow: 0 16px 40px rgba(168, 85, 247, 0.12);
+  color: rgba(168, 85, 247, 0.95);
+}
+
+.repHeadTitle {
+  font-weight: 700;
+  color: #f1f5f9;
+}
+.repHeadSub {
+  font-size: 12.5px;
+  color: rgba(226, 232, 240, 0.58);
+  margin-top: 2px;
+}
+
+.repForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.repField label {
+  display: block;
+  font-size: 12.5px;
+  color: rgba(226, 232, 240, 0.62);
+  margin-bottom: 7px;
+}
+
+.repField input,
+.repField select {
+  width: 100%;
+  height: 40px;
+  border-radius: 14px;
+  border: 1px solid rgba(30, 41, 59, 0.9);
+  background: rgba(10, 14, 26, 0.85);
+  color: rgba(226, 232, 240, 0.9);
+  padding: 0 12px;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.repField input::placeholder {
+  color: rgba(148, 163, 184, 0.55);
+}
+
+.repField input:focus,
+.repField select:focus {
+  border-color: rgba(34, 211, 238, 0.4);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.12);
+}
+
+.repActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* ====== BUTTONS ====== */
+.repBtn {
+  height: 40px;
+  border-radius: 14px;
+  border: 1px solid rgba(30, 41, 59, 0.9);
+  background: rgba(10, 14, 26, 0.65);
+  color: rgba(226, 232, 240, 0.9);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 14px;
+  cursor: pointer;
+  transition: transform 120ms ease, background 160ms ease, border-color 160ms ease, opacity 160ms ease;
+}
+
+.repBtn:hover {
+  background: rgba(148, 163, 184, 0.06);
+}
+
+.repBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.repBtn.icon {
+  width: 44px;
+  padding: 0;
+}
+
+.repBtn.primary {
+  flex: 1;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  font-weight: 700;
+}
+
+.repBtn.primary.cyan {
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.95), rgba(6, 182, 212, 0.92));
+  color: #071018;
+  box-shadow: 0 20px 60px rgba(34, 211, 238, 0.2);
+}
+.repBtn.primary.red {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.92));
+  color: #160708;
+  box-shadow: 0 20px 60px rgba(239, 68, 68, 0.2);
+}
+.repBtn.primary.purple {
+  background: linear-gradient(90deg, rgba(168, 85, 247, 0.95), rgba(147, 51, 234, 0.92));
+  color: #0f0616;
+  box-shadow: 0 20px 60px rgba(168, 85, 247, 0.2);
+}
+
+.repBtn.outline {
+  background: transparent;
+}
+.repBtn.outline:hover {
+  background: rgba(148, 163, 184, 0.06);
+  border-color: rgba(148, 163, 184, 0.25);
+}
+
+/* ====== KPI ====== */
+.repKpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.repKpiCard {
+  padding: 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(30, 41, 59, 0.9);
+  background: linear-gradient(180deg, rgba(18, 22, 31, 0.9), rgba(26, 31, 46, 0.55));
+}
+
+.kpiLabel {
+  font-size: 12.5px;
+  color: rgba(226, 232, 240, 0.6);
+  margin-bottom: 8px;
+}
+
+.kpiValue {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #f1f5f9;
+  line-height: 1.05;
+}
+.kpiValue.green {
+  color: rgba(74, 222, 128, 0.95);
+}
+.kpiValue.orange {
+  color: rgba(251, 146, 60, 0.95);
+}
+.kpiValue.red {
+  color: rgba(248, 113, 113, 0.95);
+}
+.kpiValue.redStrong {
+  color: rgba(239, 68, 68, 0.98);
+}
+.kpiValue.purple {
+  color: rgba(196, 181, 253, 0.95);
+}
+.kpiValue.text {
+  font-size: 18px;
+  font-weight: 800;
+}
+.kpiValue.small {
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(226, 232, 240, 0.75);
+}
+
+/* ====== TABLE CARD ====== */
+.repTableCard {
+  overflow: hidden;
+}
+
+.repTableHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(30, 41, 59, 0.9);
+}
+
+.repTableHead.noBorder {
+  border-bottom: none;
+}
+
+.repExport {
+  display: inline-flex;
+  gap: 10px;
+}
+
+.repEmpty {
+  padding: 70px 20px;
+  text-align: center;
+  color: rgba(148, 163, 184, 0.7);
+}
+.repEmpty svg {
+  opacity: 0.35;
+  margin-bottom: 10px;
+}
+
+.repTableWrap {
+  width: 100%;
+  overflow: auto;
+}
+
+.repTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 860px;
+}
+
+.repTable thead th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(148, 163, 184, 0.8);
+  padding: 12px 14px;
+  background: rgba(10, 14, 26, 0.35);
+  border-bottom: 1px solid rgba(30, 41, 59, 0.9);
+}
+
+.repTable tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(30, 41, 59, 0.65);
+}
+
+.repTable tbody tr:hover td {
+  background: rgba(148, 163, 184, 0.06);
+}
+
+.repNoRow {
+  text-align: center;
+  padding: 18px 14px;
+  color: rgba(148, 163, 184, 0.75);
+}
+
+.textWhite {
+  color: #f1f5f9;
+}
+.textMuted {
+  color: rgba(148, 163, 184, 0.85);
+}
+.textSoft {
+  color: rgba(226, 232, 240, 0.85);
+}
+.textTiny {
+  font-size: 12px;
+  color: rgba(148, 163, 184, 0.65);
+}
+
+.cellStack {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* ====== BADGES ====== */
+.repBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(148, 163, 184, 0.06);
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.repBadge.strong {
+  font-weight: 800;
+}
+
+.repBadge.purple {
+  background: rgba(168, 85, 247, 0.16);
+  border-color: rgba(168, 85, 247, 0.22);
+  color: rgba(196, 181, 253, 0.95);
+}
+
+.repBadge.cyan {
+  background: rgba(34, 211, 238, 0.14);
+  border-color: rgba(34, 211, 238, 0.22);
+  color: rgba(34, 211, 238, 0.95);
+}
+
+.repBadge.green {
+  background: rgba(74, 222, 128, 0.14);
+  border-color: rgba(74, 222, 128, 0.22);
+  color: rgba(74, 222, 128, 0.95);
+}
+
+.repBadge.red {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.22);
+  color: rgba(248, 113, 113, 0.95);
+}
+
+.repBadge.orange {
+  background: rgba(251, 146, 60, 0.16);
+  border-color: rgba(251, 146, 60, 0.24);
+  color: rgba(251, 146, 60, 0.95);
+}
+
+/* ====== CHART CARD ====== */
+.repChartCard {
+  padding: 16px 18px 18px 18px;
+}
+
+.repBars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.repBarRow {
+  display: grid;
+  grid-template-columns: 200px 1fr 60px;
+  gap: 12px;
+  align-items: center;
+}
+
+.repBarLabel {
+  font-size: 12.5px;
+  color: rgba(226, 232, 240, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.repBarTrack {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.10);
+  overflow: hidden;
+}
+
+.repBarFill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(168, 85, 247, 0.95), rgba(34, 211, 238, 0.55));
+}
+
+.repBarValue {
+  text-align: right;
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.75);
+  font-weight: 800;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 1100px) {
+  .repGrid {
+    grid-template-columns: 1fr;
+  }
+  .repFilters {
+    position: relative;
+    top: auto;
+  }
+  .repTable {
+    min-width: 780px;
+  }
+}
+
+@media (max-width: 620px) {
+  .repKpis {
+    grid-template-columns: 1fr;
+  }
+  .repTabs {
+    display: flex;
+    width: 100%;
+    overflow: auto;
+  }
+  .repBarRow {
+    grid-template-columns: 140px 1fr 50px;
+  }
+}

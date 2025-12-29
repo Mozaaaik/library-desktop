@@ -15,6 +15,9 @@ import ReturnPage from "./components/ReturnPage";
 import "./pages/appShell.css";
 import FinesPage from "./components/FinesPage";
 import Dashboard from "./components/Dashboard";
+import ReportsPage from "./components/ReportsPage";
+import { DynamicQueryPage } from "./components/DynamicQueryPage";
+
 
 function App() {
   const [isAuthed, setIsAuthed] = useState(false);
@@ -58,6 +61,10 @@ function App() {
         {page === "returns" && <ReturnPage user={user} />}
 
         {page === "fines" && <FinesPage onNavigate={onNavigate} user={user} />}
+         
+        {page === "reports" && <ReportsPage onNavigate={onNavigate} user={user} />}
+
+        {page === "dynamic-query" && <DynamicQueryPage onNavigate={onNavigate} user={user} />}
 
         {page === "dashboard" && (
           <Dashboard onNavigate={onNavigate} user={user} />
