@@ -9,9 +9,9 @@ import {
   Trash2,
   User as UserIcon,
   AlertTriangle, // Uyarı ikonu eklendi
-  CheckCircle,   // Başarı ikonu eklendi
-  XCircle,       // Hata ikonu eklendi
-  Info           // Bilgi ikonu eklendi
+  CheckCircle, // Başarı ikonu eklendi
+  XCircle, // Hata ikonu eklendi
+  Info, // Bilgi ikonu eklendi
 } from "lucide-react";
 import "../pages/MembersPage.css";
 
@@ -140,11 +140,10 @@ export default function MembersPage({ onNavigate, user }) {
 
     let memberToSave = { ...editingMember };
 
-
     if (Number(memberToSave.debt) > 150) {
       memberToSave.status = "Donduruldu";
       // Emoji yerine warning tipi gönderiyoruz
-      showToast("Borç limiti aşıldığı için üye donduruldu", "warning"); 
+      showToast("Borç limiti aşıldığı için üye donduruldu", "warning");
     }
     // ------------------------------------------------
 
@@ -159,7 +158,7 @@ export default function MembersPage({ onNavigate, user }) {
 
         if (res.ok) {
           showToast("Üye eklendi", "success");
-          fetchMembers(); 
+          fetchMembers();
           closeForm();
         } else {
           showToast("Ekleme başarısız", "error");
@@ -188,7 +187,10 @@ export default function MembersPage({ onNavigate, user }) {
 
   const requestDelete = (m) => {
     if (m.activeLoans > 0 || m.debt > 0) {
-      showToast("Bu üyenin aktif ödünç kaydı veya borcu var. Silinemez.", "warning");
+      showToast(
+        "Bu üyenin aktif ödünç kaydı veya borcu var. Silinemez.",
+        "warning"
+      );
       return;
     }
     setConfirm({ open: true, member: m });
@@ -203,7 +205,7 @@ export default function MembersPage({ onNavigate, user }) {
 
       if (res.ok) {
         showToast("Üye silindi", "success");
-        fetchMembers(); 
+        fetchMembers();
       } else {
         showToast("Silme işlemi başarısız", "error");
       }
@@ -214,7 +216,7 @@ export default function MembersPage({ onNavigate, user }) {
       setConfirm({ open: false, member: null });
     }
   };
-  
+
   const openLoans = async (m) => {
     setLoanModal({ open: true, member: m });
     setLoans([]);
@@ -225,7 +227,7 @@ export default function MembersPage({ onNavigate, user }) {
     try {
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Loans fetch failed`);
-      const raw = await res.text(); 
+      const raw = await res.text();
       const data = raw ? JSON.parse(raw) : [];
       setLoans(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -236,7 +238,6 @@ export default function MembersPage({ onNavigate, user }) {
       setLoansLoading(false);
     }
   };
-
 
   const closeLoans = () => {
     setLoanModal({ open: false, member: null });
@@ -253,11 +254,15 @@ export default function MembersPage({ onNavigate, user }) {
 
   // Toast İkon Helper
   const getToastIcon = (type) => {
-    switch(type) {
-        case 'success': return <CheckCircle size={20} />;
-        case 'error': return <XCircle size={20} />;
-        case 'warning': return <AlertTriangle size={20} />;
-        default: return <Info size={20} />;
+    switch (type) {
+      case "success":
+        return <CheckCircle size={20} />;
+      case "error":
+        return <XCircle size={20} />;
+      case "warning":
+        return <AlertTriangle size={20} />;
+      default:
+        return <Info size={20} />;
     }
   };
 
@@ -357,7 +362,7 @@ export default function MembersPage({ onNavigate, user }) {
                       {m.activeLoans} kitap
                     </span>
                   ) : (
-                    <span className="mpDim">Kitap ödünç alınmamış.</span>
+                    <span className="mpPill mpPillGray">0 kitap</span>
                   )}
                   {m.debt > 0 ? (
                     <span className="mpPill mpPillRed">Borç: {m.debt}₺</span>
@@ -384,7 +389,6 @@ export default function MembersPage({ onNavigate, user }) {
                     >
                       <Eye size={16} />
                     </button>
-
 
                     <button
                       className="mpIconBtn purple"
@@ -589,7 +593,8 @@ export default function MembersPage({ onNavigate, user }) {
               <div>
                 <div className="mpModalTitle">Ödünç Aldığı Kitaplar</div>
                 <div className="mpModalSub">
-                  <b>{fullName(loanModal.member)}</b> kullanıcısının aktif ödünçleri
+                  <b>{fullName(loanModal.member)}</b> kullanıcısının aktif
+                  ödünçleri
                 </div>
               </div>
               <button className="mpX" type="button" onClick={closeLoans}>
@@ -617,17 +622,25 @@ export default function MembersPage({ onNavigate, user }) {
                       <div key={x.islemId} className="mpRow" role="row">
                         <div className="mpCell">
                           <div className="loanBook">
-                            <div className="loanTitle" title={x.title}>{x.title}</div>
-                            <div className="loanCat" title={x.author}>{x.author}</div>
+                            <div className="loanTitle" title={x.title}>
+                              {x.title}
+                            </div>
+                            <div className="loanCat" title={x.author}>
+                              {x.author}
+                            </div>
                           </div>
                         </div>
 
-                        <div className="mpCell muted loanIsbn" title={x.isbn}>{x.isbn}</div>
+                        <div className="mpCell muted loanIsbn" title={x.isbn}>
+                          {x.isbn}
+                        </div>
                         <div className="mpCell">{fmtDate(x.givenAt)}</div>
                         <div className="mpCell">{fmtDate(x.dueAt)}</div>
 
                         <div className="mpCell">
-                          <span className={`mpPill ${x.status === "Aktif" ? "mpPillCyan" : "mpPillGreen"}`}>
+                          <span
+                            className={`mpPill ${x.status === "Aktif" ? "mpPillCyan" : "mpPillGreen"}`}
+                          >
                             {x.status}
                           </span>
                         </div>
@@ -639,14 +652,17 @@ export default function MembersPage({ onNavigate, user }) {
             </div>
 
             <div className="mpModalFoot">
-              <button className="mpOutlineBtn" type="button" onClick={closeLoans}>
+              <button
+                className="mpOutlineBtn"
+                type="button"
+                onClick={closeLoans}
+              >
                 Kapat
               </button>
             </div>
           </div>
         </div>
       )}
-
 
       {/* Delete Confirm Modal */}
       {confirm.open && (
