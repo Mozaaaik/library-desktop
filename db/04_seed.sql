@@ -23,28 +23,6 @@ INSERT INTO Personel (KullaniciAdi, Sifre, AdSoyad, Rol) VALUES
 
 -- ==========================================
 -- 3) KİTAPLAR
--- KitapID sırası:
---  1 Suç ve Ceza
---  2 Sefiller
---  3 1984
---  4 Kürk Mantolu Madonna
---  5 Dune
---  6 LOTR
---  7 Fahrenheit 451
---  8 Otostopçu
---  9 Nutuk
--- 10 Sapiens
--- 11 Türklerin Tarihi
--- 12 Clean Code
--- 13 Introduction to Algorithms
--- 14 Design Patterns
--- 15 Head First Java
--- 16 Atomik Alışkanlıklar
--- 17 Simyacı
--- 18 Devlet
--- 19 Böyle Buyurdu Zerdüşt
--- 20 Bilim ve Teknik
--- 21 National Geographic
 -- ==========================================
 INSERT INTO Kitaplar (KategoriID, Baslik, Yazar, Yayinevi, ISBN, ToplamAdet, MevcutAdet) VALUES 
 (1, 'Suç ve Ceza', 'Fyodor Dostoyevski', 'İş Bankası Yayınları', '9789754589023', 10, 10),
@@ -76,8 +54,7 @@ INSERT INTO Kitaplar (KategoriID, Baslik, Yazar, Yayinevi, ISBN, ToplamAdet, Mev
 (7, 'National Geographic - Sayı 12', 'NatGeo', 'National Geographic', '9771302837007', 10, 10);
 
 -- ==========================================
--- 4) ÜYELER (Futbolcular)
--- UyeID = 50..63
+-- 4) ÜYELER (ToplamBorc seed'de yazmıyoruz)
 -- ==========================================
 INSERT INTO Uyeler (UyeID, OgrenciNo, Ad, Soyad, Telefon, Email, Durum)
 VALUES
@@ -96,79 +73,80 @@ VALUES
 (62, '20245013', 'Sergio',    'Busquets',   '5554500113', 'sergio.busquets@ogrenci.edu.tr',   'Aktif'),
 (63, '20245014', 'Dani',      'Alves',      '5554500114', 'dani.alves@ogrenci.edu.tr',        'Aktif');
 
+UPDATE Uyeler SET ToplamBorc = 0 WHERE ToplamBorc IS NULL;
+
 -- ==========================================
--- 5) ÖDÜNÇLER (Karışık: bazıları teslim edilmedi, bazıları geç teslim)
--- IslemID = 400..414
+-- 5) ÖDÜNÇLER
 -- ==========================================
 INSERT INTO OduncIslemleri
 (IslemID, UyeID, KitapID, PersonelID, VerilisTarihi, SonTeslimTarihi, TeslimTarihi)
 VALUES
--- Teslim edilmedi (Unpaid ağırlıklı)
-(400, 50,  7, 2, DATE_SUB(NOW(), INTERVAL 18 DAY), DATE_SUB(NOW(), INTERVAL  8 DAY), NULL),  -- Messi / Fahrenheit
-(401, 51, 12, 2, DATE_SUB(NOW(), INTERVAL 33 DAY), DATE_SUB(NOW(), INTERVAL 18 DAY), NULL),  -- Ronaldo / Clean Code
-(402, 52, 10, 2, DATE_SUB(NOW(), INTERVAL 28 DAY), DATE_SUB(NOW(), INTERVAL 13 DAY), NULL),  -- Xavi / Sapiens
-(403, 54,  5, 2, DATE_SUB(NOW(), INTERVAL 26 DAY), DATE_SUB(NOW(), INTERVAL 10 DAY), NULL),  -- Ramos / Dune
-(404, 55, 16, 2, DATE_SUB(NOW(), INTERVAL 20 DAY), DATE_SUB(NOW(), INTERVAL  6 DAY), NULL),  -- Pique / Atomik
-(405, 56, 13, 3, DATE_SUB(NOW(), INTERVAL 45 DAY), DATE_SUB(NOW(), INTERVAL 18 DAY), NULL),  -- Benzema / Intro Algo
-(406, 58,  6, 2, DATE_SUB(NOW(), INTERVAL 29 DAY), DATE_SUB(NOW(), INTERVAL 11 DAY), NULL),  -- Neymar / LOTR
-(407, 59, 15, 3, DATE_SUB(NOW(), INTERVAL 35 DAY), DATE_SUB(NOW(), INTERVAL 14 DAY), NULL),  -- Suarez / Head First Java
-(408, 60, 11, 2, DATE_SUB(NOW(), INTERVAL 22 DAY), DATE_SUB(NOW(), INTERVAL  7 DAY), NULL),  -- Modric / Türklerin Tarihi
-(409, 61, 18, 2, DATE_SUB(NOW(), INTERVAL 19 DAY), DATE_SUB(NOW(), INTERVAL  6 DAY), NULL),  -- Marcelo / Devlet
+(400, 50,  7, 2, DATE_SUB(NOW(), INTERVAL 18 DAY), DATE_SUB(NOW(), INTERVAL  8 DAY), NULL),
+(401, 51, 12, 2, DATE_SUB(NOW(), INTERVAL 33 DAY), DATE_SUB(NOW(), INTERVAL 18 DAY), NULL),
+(402, 52, 10, 2, DATE_SUB(NOW(), INTERVAL 28 DAY), DATE_SUB(NOW(), INTERVAL 13 DAY), NULL),
+(403, 54,  5, 2, DATE_SUB(NOW(), INTERVAL 26 DAY), DATE_SUB(NOW(), INTERVAL 10 DAY), NULL),
+(404, 55, 16, 2, DATE_SUB(NOW(), INTERVAL 20 DAY), DATE_SUB(NOW(), INTERVAL  6 DAY), NULL),
+(405, 56, 13, 3, DATE_SUB(NOW(), INTERVAL 45 DAY), DATE_SUB(NOW(), INTERVAL 18 DAY), NULL),
+(406, 58,  6, 2, DATE_SUB(NOW(), INTERVAL 29 DAY), DATE_SUB(NOW(), INTERVAL 11 DAY), NULL),
+(407, 59, 15, 3, DATE_SUB(NOW(), INTERVAL 35 DAY), DATE_SUB(NOW(), INTERVAL 14 DAY), NULL),
+(408, 60, 11, 2, DATE_SUB(NOW(), INTERVAL 22 DAY), DATE_SUB(NOW(), INTERVAL  7 DAY), NULL),
+(409, 61, 18, 2, DATE_SUB(NOW(), INTERVAL 19 DAY), DATE_SUB(NOW(), INTERVAL  6 DAY), NULL),
 
--- Geç teslim edilen (Paid örnekleri)
-(410, 50,  2, 2, DATE_SUB(NOW(), INTERVAL 40 DAY), DATE_SUB(NOW(), INTERVAL 25 DAY), DATE_SUB(NOW(), INTERVAL 20 DAY)), -- Messi / Sefiller
-(411, 51,  4, 3, DATE_SUB(NOW(), INTERVAL 55 DAY), DATE_SUB(NOW(), INTERVAL 40 DAY), DATE_SUB(NOW(), INTERVAL 35 DAY)), -- Ronaldo / Kürk Mantolu
-(412, 53,  1, 3, DATE_SUB(NOW(), INTERVAL 34 DAY), DATE_SUB(NOW(), INTERVAL 14 DAY), DATE_SUB(NOW(), INTERVAL  9 DAY)), -- Iniesta / Suç ve Ceza
-(413, 57,  9, 2, DATE_SUB(NOW(), INTERVAL 31 DAY), DATE_SUB(NOW(), INTERVAL 15 DAY), DATE_SUB(NOW(), INTERVAL 10 DAY)), -- Casillas / Nutuk
-(414, 62,  8, 3, DATE_SUB(NOW(), INTERVAL 25 DAY), DATE_SUB(NOW(), INTERVAL 10 DAY), DATE_SUB(NOW(), INTERVAL  6 DAY)); -- Busquets / Otostopçu
-
+(410, 50,  2, 2, DATE_SUB(NOW(), INTERVAL 40 DAY), DATE_SUB(NOW(), INTERVAL 25 DAY), DATE_SUB(NOW(), INTERVAL 20 DAY)),
+(411, 51,  4, 3, DATE_SUB(NOW(), INTERVAL 55 DAY), DATE_SUB(NOW(), INTERVAL 40 DAY), DATE_SUB(NOW(), INTERVAL 35 DAY)),
+(412, 53,  1, 3, DATE_SUB(NOW(), INTERVAL 34 DAY), DATE_SUB(NOW(), INTERVAL 14 DAY), DATE_SUB(NOW(), INTERVAL  9 DAY)),
+(413, 57,  9, 2, DATE_SUB(NOW(), INTERVAL 31 DAY), DATE_SUB(NOW(), INTERVAL 15 DAY), DATE_SUB(NOW(), INTERVAL 10 DAY)),
+(414, 62,  8, 3, DATE_SUB(NOW(), INTERVAL 25 DAY), DATE_SUB(NOW(), INTERVAL 10 DAY), DATE_SUB(NOW(), INTERVAL  6 DAY));
 
 -- ==========================================
--- 6) CEZALAR (Karışık: Paid + Unpaid, bazı kişilere 2 ceza)
--- Not: Durum ENUM değilse VARCHAR ise yine çalışır.
+-- 6) CEZALAR (HESAPLA: gecikmeGunu * 5TL)
+-- Kural:
+--   - Teslim edildiyse gecikme = Teslim - SonTeslim
+--   - Teslim edilmediyse gecikme = Bugün - SonTeslim
+--   - gecikme <= 0 ise ceza yok (insert edilmez)
+-- Durum:
+--   - Teslim edilmediyse -> Unpaid
+--   - Teslim edildiyse    -> Paid
 -- ==========================================
-INSERT INTO Cezalar
-(IslemID, UyeID, Tutar, Aciklama, OlusturmaTarihi, Durum, OdemeTarihi)
-VALUES
--- Messi: 1 unpaid + 1 paid
-(400, 50, 24.00, 'Fahrenheit 451 - Teslim edilmedi (gecikme)', NOW(), 'Unpaid', NULL),
-(410, 50, 15.00, 'Sefiller - Geç teslim cezası',               DATE_SUB(NOW(), INTERVAL 20 DAY), 'Paid', DATE_SUB(NOW(), INTERVAL 18 DAY)),
 
--- Ronaldo: 1 unpaid + 1 paid
-(401, 51, 55.00, 'Clean Code - Teslim edilmedi (gecikme)',     NOW(), 'Unpaid', NULL),
-(411, 51, 18.00, 'Kürk Mantolu Madonna - Geç teslim',          DATE_SUB(NOW(), INTERVAL 35 DAY), 'Paid', DATE_SUB(NOW(), INTERVAL 33 DAY)),
+-- (opsiyonel) Cezalar tablosunu boşaltmak istersen:
+-- TRUNCATE TABLE Cezalar;
 
--- Xavi: 1 unpaid
-(402, 52, 32.00, 'Sapiens - Teslim edilmedi',                  NOW(), 'Unpaid', NULL),
-
--- Iniesta: 1 paid
-(412, 53, 20.00, 'Suç ve Ceza - Geç teslim',                   DATE_SUB(NOW(), INTERVAL 9 DAY), 'Paid', DATE_SUB(NOW(), INTERVAL 7 DAY)),
-
--- Ramos: 1 unpaid (borç)
-(403, 54, 40.00, 'Dune - Teslim edilmedi',                     NOW(), 'Unpaid', NULL),
-
--- Pique: 2 ceza (1 unpaid + 1 paid) -> karışık örnek
-(404, 55, 18.00, 'Atomik Alışkanlıklar - Teslim edilmedi',     NOW(), 'Unpaid', NULL),
-(413, 55, 12.00, 'Ek kayıt: Kısa gecikme (Nutuk işlemine bağlandı)', DATE_SUB(NOW(), INTERVAL 12 DAY), 'Paid', DATE_SUB(NOW(), INTERVAL 11 DAY)),
-
--- Benzema: 1 unpaid
-(405, 56, 60.00, 'Introduction to Algorithms - Teslim edilmedi', NOW(), 'Unpaid', NULL),
-
--- Casillas: 1 paid
-(413, 57, 25.00, 'Nutuk - Geç teslim',                         DATE_SUB(NOW(), INTERVAL 10 DAY), 'Paid', DATE_SUB(NOW(), INTERVAL 9 DAY)),
-
--- Neymar: 1 unpaid
-(406, 58, 28.00, 'LOTR - Teslim edilmedi',                     NOW(), 'Unpaid', NULL),
-
--- Suarez: 2 ceza (1 unpaid + 1 paid) -> daha dolu
-(407, 59, 45.00, 'Head First Java - Teslim edilmedi',          NOW(), 'Unpaid', NULL),
-(412, 59, 10.00, 'Ek kayıt: Küçük gecikme cezası',             DATE_SUB(NOW(), INTERVAL 25 DAY), 'Paid', DATE_SUB(NOW(), INTERVAL 23 DAY)),
-
--- Modric: 1 unpaid
-(408, 60, 22.00, 'Türklerin Tarihi - Teslim edilmedi',         NOW(), 'Unpaid', NULL),
-
--- Marcelo: 1 unpaid
-(409, 61, 14.00, 'Devlet - Teslim edilmedi',                   NOW(), 'Unpaid', NULL),
-
--- Busquets: 1 paid
-(414, 62, 12.00, 'Otostopçu - Geç teslim',                     DATE_SUB(NOW(), INTERVAL 6 DAY), 'Paid', DATE_SUB(NOW(), INTERVAL 5 DAY));
+INSERT INTO Cezalar (IslemID, UyeID, Tutar, Aciklama, OlusturmaTarihi, Durum, OdemeTarihi)
+SELECT
+  oi.IslemID,
+  oi.UyeID,
+  (GREATEST(
+     DATEDIFF(
+       DATE(COALESCE(oi.TeslimTarihi, NOW())),
+       DATE(oi.SonTeslimTarihi)
+     ), 0
+   ) * 5.00) AS Tutar,
+  CONCAT(
+    'Gecikme: ',
+    GREATEST(
+      DATEDIFF(
+        DATE(COALESCE(oi.TeslimTarihi, NOW())),
+        DATE(oi.SonTeslimTarihi)
+      ), 0
+    ),
+    ' gün x 5TL'
+  ) AS Aciklama,
+  NOW() AS OlusturmaTarihi,
+  CASE
+    WHEN oi.TeslimTarihi IS NULL THEN 'Unpaid'
+    ELSE 'Paid'
+  END AS Durum,
+  CASE
+    WHEN oi.TeslimTarihi IS NULL THEN NULL
+    ELSE oi.TeslimTarihi
+  END AS OdemeTarihi
+FROM OduncIslemleri oi
+WHERE
+  oi.SonTeslimTarihi IS NOT NULL
+  AND GREATEST(
+    DATEDIFF(
+      DATE(COALESCE(oi.TeslimTarihi, NOW())),
+      DATE(oi.SonTeslimTarihi)
+    ), 0
+  ) > 0;

@@ -65,4 +65,21 @@ BEGIN
     END IF;
 END //
 
+-- 5. TR_CEZA_PAID_UPDATE
+-- Ceza durumu Paid olarak güncellendiğinde üyenin toplam borcunu düşürür ve loglar.
+CREATE TRIGGER TR_CEZA_PAID_UPDATE
+AFTER UPDATE ON Cezalar
+FOR EACH ROW
+BEGIN
+  -- Sadece Paid'e yeni geçtiyse borç düş
+  IF OLD.Durum <> 'Paid' AND NEW.Durum = 'Paid' THEN
+    UPDATE Uyeler
+    SET ToplamBorc = GREATEST(ToplamBorc - OLD.Tutar, 0)
+    WHERE UyeID = NEW.UyeID;
+
+    INSERT INTO SistemLoglari (TabloAdi, IslemTuru, Aciklama)
+    VALUES ('Cezalar', 'UPDATE', CONCAT('Ceza ödendi. CezaID: ', NEW.CezaID, ' Tutar: ', OLD.Tutar));
+  END IF;
+END//
+
 DELIMITER ;
