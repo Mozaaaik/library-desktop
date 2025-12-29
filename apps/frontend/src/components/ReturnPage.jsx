@@ -197,9 +197,8 @@ const ReturnPage = () => {
           </div>
         </div>
 
-        {/* SAĞ PANEL (Değişiklik yok) */}
+        {/* SAĞ PANEL */}
         <div className="rp-detail-panel">
-            {/* ... Burası önceki kod ile aynı ... */}
              {selectedLoan ? (
             <div className="detail-card animate-fade-in">
               <div className="detail-header">
