@@ -13,13 +13,13 @@ INSERT INTO Kategoriler (KategoriAdi) VALUES
 ('Süreli Yayınlar (Dergi)');
 
 -- ==========================================
--- 2) PERSONEL
+-- 2) PERSONEL Şifre : 654321 hashlenmiş hali veritabanında
 -- ==========================================
 INSERT INTO Personel (KullaniciAdi, Sifre, AdSoyad, Rol) VALUES 
-('admin',  '1234', 'Furkan Yönetici', 'Admin'),
-('ali',    '1234', 'Ali Kütüphaneci', 'Gorevli'),
-('ayse',   '1234', 'Ayşe Görevli',    'Gorevli'),
-('mehmet', '1234', 'Mehmet Nöbetçi',  'Gorevli');
+('admin',  '$2b$10$8O/1.CB4GW2gA/BiVuMJ3Oip5kOiCvxbA9HibQKO2EitPtpz8lcEO', 'Furkan Yönetici', 'Admin'),
+('ali',    '$2b$10$8O/1.CB4GW2gA/BiVuMJ3Oip5kOiCvxbA9HibQKO2EitPtpz8lcEO', 'Ali Kütüphaneci', 'Gorevli'),
+('ayse',   '$2b$10$8O/1.CB4GW2gA/BiVuMJ3Oip5kOiCvxbA9HibQKO2EitPtpz8lcEO', 'Ayşe Görevli',    'Gorevli'),
+('mehmet', '$2b$10$8O/1.CB4GW2gA/BiVuMJ3Oip5kOiCvxbA9HibQKO2EitPtpz8lcEO', 'Mehmet Nöbetçi',  'Gorevli');
 
 -- ==========================================
 -- 3) KİTAPLAR
@@ -58,20 +58,20 @@ INSERT INTO Kitaplar (KategoriID, Baslik, Yazar, Yayinevi, ISBN, ToplamAdet, Mev
 -- ==========================================
 INSERT INTO Uyeler (UyeID, OgrenciNo, Ad, Soyad, Telefon, Email, Durum)
 VALUES
-(50, '20245001', 'Lionel',    'Messi',      '5554500101', 'lionel.messi@ogrenci.edu.tr',      'Aktif'),
-(51, '20245002', 'Cristiano', 'Ronaldo',    '5554500102', 'cristiano.ronaldo@ogrenci.edu.tr', 'Aktif'),
-(52, '20245003', 'Xavi',      'Hernandez',  '5554500103', 'xavi.hernandez@ogrenci.edu.tr',    'Aktif'),
-(53, '20245004', 'Andres',    'Iniesta',    '5554500104', 'andres.iniesta@ogrenci.edu.tr',    'Aktif'),
-(54, '20245005', 'Sergio',    'Ramos',      '5554500105', 'sergio.ramos@ogrenci.edu.tr',      'Aktif'),
-(55, '20245006', 'Gerard',    'Pique',      '5554500106', 'gerard.pique@ogrenci.edu.tr',      'Aktif'),
-(56, '20245007', 'Karim',     'Benzema',    '5554500107', 'karim.benzema@ogrenci.edu.tr',     'Aktif'),
-(57, '20245008', 'Iker',      'Casillas',   '5554500108', 'iker.casillas@ogrenci.edu.tr',     'Aktif'),
-(58, '20245009', 'Neymar',    'Jr',         '5554500109', 'neymar.jr@ogrenci.edu.tr',         'Aktif'),
-(59, '20245010', 'Luis',      'Suarez',     '5554500110', 'luis.suarez@ogrenci.edu.tr',       'Aktif'),
-(60, '20245011', 'Luka',      'Modric',     '5554500111', 'luka.modric@ogrenci.edu.tr',       'Aktif'),
-(61, '20245012', 'Marcelo',   'Vieira',     '5554500112', 'marcelo.vieira@ogrenci.edu.tr',    'Aktif'),
-(62, '20245013', 'Sergio',    'Busquets',   '5554500113', 'sergio.busquets@ogrenci.edu.tr',   'Aktif'),
-(63, '20245014', 'Dani',      'Alves',      '5554500114', 'dani.alves@ogrenci.edu.tr',        'Aktif');
+(50, '20245001', 'Ahmet',   'Yılmaz',   '5554500101', 'ahmet.yilmaz@ogrenci.edu.tr',   'Aktif'),
+(51, '20245002', 'Elif',    'Kaya',     '5554500102', 'elif.kaya@ogrenci.edu.tr',     'Aktif'),
+(52, '20245003', 'Mehmet',  'Demir',    '5554500103', 'mehmet.demir@ogrenci.edu.tr',  'Aktif'),
+(53, '20245004', 'Zeynep',  'Çetin',    '5554500104', 'zeynep.cetin@ogrenci.edu.tr',  'Aktif'),
+(54, '20245005', 'Mert',    'Şahin',    '5554500105', 'mert.sahin@ogrenci.edu.tr',    'Aktif'),
+(55, '20245006', 'Ayşe',    'Koç',      '5554500106', 'ayse.koc@ogrenci.edu.tr',      'Aktif'),
+(56, '20245007', 'Kerem',   'Aydın',    '5554500107', 'kerem.aydin@ogrenci.edu.tr',   'Aktif'),
+(57, '20245008', 'Sude',    'Arslan',   '5554500108', 'sude.arslan@ogrenci.edu.tr',   'Aktif'),
+(58, '20245009', 'Berk',    'Öztürk',   '5554500109', 'berk.ozturk@ogrenci.edu.tr',   'Aktif'),
+(59, '20245010', 'Ece',     'Polat',    '5554500110', 'ece.polat@ogrenci.edu.tr',     'Aktif'),
+(60, '20245011', 'Hasan',   'Güneş',    '5554500111', 'hasan.gunes@ogrenci.edu.tr',   'Aktif'),
+(61, '20245012', 'Ceren',   'Yıldırım', '5554500112', 'ceren.yildirim@ogrenci.edu.tr','Aktif'),
+(62, '20245013', 'Oğuz',    'Karaca',   '5554500113', 'oguz.karaca@ogrenci.edu.tr',   'Aktif'),
+(63, '20245014', 'Deniz',   'Aksoy',    '5554500114', 'deniz.aksoy@ogrenci.edu.tr',   'Donduruldu');
 
 UPDATE Uyeler SET ToplamBorc = 0 WHERE ToplamBorc IS NULL;
 
@@ -123,15 +123,15 @@ SELECT
      ), 0
    ) * 5.00) AS Tutar,
   CONCAT(
-    'Gecikme: ',
     GREATEST(
       DATEDIFF(
         DATE(COALESCE(oi.TeslimTarihi, NOW())),
         DATE(oi.SonTeslimTarihi)
       ), 0
     ),
-    ' gün x 5TL'
+    ' gün gecikme.'
   ) AS Aciklama,
+
   NOW() AS OlusturmaTarihi,
   CASE
     WHEN oi.TeslimTarihi IS NULL THEN 'Unpaid'

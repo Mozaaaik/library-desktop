@@ -44,6 +44,10 @@ export default function MembersPage({ onNavigate, user }) {
 
   const API_URL = "http://localhost:3000/members";
 
+  const getMemberId = (m) =>
+    m?.id ?? m?.UyeID ?? m?.uyeId ?? m?.MemberID ?? m?.memberId;
+
+
   const fetchMembers = async () => {
     try {
       const res = await fetch(API_URL);
@@ -67,8 +71,9 @@ export default function MembersPage({ onNavigate, user }) {
     return members.filter((m) => {
       const matchesSearch =
         fullName(m).toLowerCase().includes(q) ||
-        m.studentId.toLowerCase().includes(q) ||
-        m.email.toLowerCase().includes(q);
+        (m.studentId || "").toLowerCase().includes(q) ||
+        (m.email || "").toLowerCase().includes(q);
+
 
       const matchesStatus = statusFilter === "all" || m.status === statusFilter;
       return matchesSearch && matchesStatus;
@@ -165,7 +170,7 @@ export default function MembersPage({ onNavigate, user }) {
         }
       } else {
         // --- UPDATE (PUT) ---
-        const res = await fetch(`${API_URL}/${memberToSave.id}`, {
+        const res = await fetch(`${API_URL}/${getMemberId(memberToSave)}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(memberToSave),
@@ -198,31 +203,43 @@ export default function MembersPage({ onNavigate, user }) {
 
   const confirmDelete = async () => {
     const m = confirm.member;
+    const id = getMemberId(m);
+
     try {
-      const res = await fetch(`${API_URL}/${m.id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+
+      // Nest çoğu zaman JSON döner:
+      let payload = null;
+      const contentType = res.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) payload = await res.json();
+      else payload = await res.text();
 
       if (res.ok) {
-        showToast("Üye silindi", "success");
+        showToast(payload?.message || "Üye silindi", "success");
         fetchMembers();
       } else {
-        showToast("Silme işlemi başarısız", "error");
+        // Nest ConflictException -> payload.message string olur
+        const msg =
+          (typeof payload === "string" ? payload : payload?.message) ||
+          "Silme işlemi başarısız";
+        showToast(msg, "warning"); // 409'da warning güzel gider
       }
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      console.error(e);
       showToast("Sunucu hatası", "error");
     } finally {
       setConfirm({ open: false, member: null });
     }
   };
 
+
+
   const openLoans = async (m) => {
     setLoanModal({ open: true, member: m });
     setLoans([]);
     setLoansLoading(true);
 
-    const url = `${API_URL}/${m.id}/loans?active=true`;
+    const url = `${API_URL}/${getMemberId(m)}/loans?active=true`;
 
     try {
       const res = await fetch(url);
@@ -326,9 +343,9 @@ export default function MembersPage({ onNavigate, user }) {
           <div className="mpTbody">
             {currentMembers.map((m) => (
               <div
-                key={m.id}
+                key={getMemberId(m)}
                 className="mpRow"
-                onClick={() => onNavigate?.("members", `detail-${m.id}`)}
+                onClick={() => onNavigate?.("members", { detail: getMemberId(m) })}
                 role="button"
                 tabIndex={0}
               >

@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import "../pages/Dashboard.css";
 
+const API = "http://localhost:3000";
+
 export default function Dashboard({ onNavigate, user }) {
   const [stats, setStats] = useState({
     totalMembers: 0,
@@ -29,28 +31,54 @@ export default function Dashboard({ onNavigate, user }) {
   // İstersen backend bağlarsın:
   // const API = "http://localhost:3000/dashboard";
   // useEffect(() => { fetch(API).then(r=>r.json()).then(setData) }, []);
-
   useEffect(() => {
-    // Şimdilik demo veri (backend yoksa ekran dolu dursun)
-    setStats({
-      totalMembers: 14,
-      activeLoans: 6,
-      overdueLoans: 3,
-      unpaidFines: 5,
-    });
+    let alive = true;
 
-    setRecent({
-      overdueTop5: [
-        { member: "Neymar Jr", book: "Suç ve Ceza", days: 5 },
-        { member: "Luka Modric", book: "1984", days: 3 },
-        { member: "Marcelo Vieira", book: "Sefiller", days: 2 },
-      ],
-      lastFines: [
-        { member: "Andres Iniesta", book: "Suç ve Ceza", amount: 20, status: "Ödendi" },
-        { member: "Luis Suarez", book: "Simyacı", amount: 55, status: "Ödenmedi" },
-      ],
-    });
+    (async () => {
+      try {
+        const res = await fetch(`${API}/dashboard/summary`);
+        if (!res.ok) throw new Error(await res.text());
+
+        const data = await res.json();
+        if (!alive) return;
+
+        // KPIs
+        setStats({
+          totalMembers: data?.kpis?.totalMembers ?? 0,
+          activeLoans: data?.kpis?.activeLoans ?? 0,
+          overdueLoans: data?.kpis?.overdueLoans ?? 0,
+          unpaidFines: data?.kpis?.unpaidFines ?? 0,
+        });
+
+        // En çok gecikenler (UI'n senin eski şeklin: member, book, days)
+        // Backend'de book yok, o yüzden sadece isim + gün göstereceğiz.
+        setRecent({
+          overdueTop5: (data?.topOverdue ?? []).map((x) => ({
+            member: `${x.memberName}`,
+            book: `${x.overdueCount} geciken ödünç`,
+            days: x.overdueDays,
+          })),
+          // Son cezalar (UI: member, book, amount, status)
+          lastFines: (data?.latestFines ?? []).map((x) => ({
+            member: `${x.memberName}`,
+            book: x.reason ?? "-",
+            amount: x.amount ?? 0,
+            status: x.status === "Paid" ? "Ödendi" : "Ödenmedi",
+          })),
+        });
+      } catch (e) {
+        console.error(e);
+        // İstersen hata durumunda sıfırla
+        setStats({ totalMembers: 0, activeLoans: 0, overdueLoans: 0, unpaidFines: 0 });
+        setRecent({ overdueTop5: [], lastFines: [] });
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
   }, []);
+
 
   const name = user?.name || "Görevli Personel";
   const role = user?.role || "Görevli";
@@ -95,7 +123,7 @@ export default function Dashboard({ onNavigate, user }) {
       title: "Dinamik Sorgu",
       desc: "Hazır sorgular / filtreli arama",
       icon: <Search size={18} />,
-      key: "dynamic",
+      key: "dynamic-query",
       color: "amber",
     },
   ];
@@ -175,9 +203,14 @@ export default function Dashboard({ onNavigate, user }) {
         <div className="dbPanel">
           <div className="dbPanelHead">
             <div className="dbPanelTitle">En Çok Gecikenler</div>
-            <button className="dbLink" onClick={() => onNavigate?.("loans")}>
+            <button
+              className="dbLink"
+              onClick={() => onNavigate?.("reports", { tab: "overdue", autoFetch: true })}
+            >
               Tümünü gör <ArrowRight size={14} />
             </button>
+
+
           </div>
 
           {recent.overdueTop5.length === 0 ? (
