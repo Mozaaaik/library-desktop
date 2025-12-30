@@ -10,6 +10,7 @@ import {
   ChevronUp,
   ChevronDown,
   ChevronsUpDown,
+  ChevronRight,
 } from "lucide-react";
 import "../pages/FinesPage.css";
 
@@ -24,7 +25,7 @@ function moneyTry(v) {
   return `₺${n.toFixed(2)}`;
 }
 
-// ✅ "unpaid" içinde "paid" geçtiği için önce UNPAID kontrol edilir.
+// "unpaid" içinde "paid" geçtiği için önce UNPAID kontrol edilir.
 function normalizeStatus(raw) {
   const s = String(raw ?? "").toLowerCase().trim();
   if (!s) return "Unpaid";
@@ -116,7 +117,7 @@ function getPageNumbers(currentPage, totalPages) {
 }
 
 function formatDateTimeTR(value) {
-  if (!value) return "—";
+  if (!value) return "-";
 
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return String(value); // bozuksa raw göster
@@ -132,7 +133,7 @@ function formatDateTimeTR(value) {
 }
 
 function formatDateTR(value) {
-  if (!value) return "—";
+  if (!value) return "-";
 
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return String(value);
@@ -148,13 +149,13 @@ export default function FinesPage({ onNavigate, user }) {
   // -----------------------------
   // DATA
   // -----------------------------
-  const [allFines, setAllFines] = useState([]); // ✅ tek sefer çekilen tüm cezalar
+  const [allFines, setAllFines] = useState([]); // tek sefer çekilen tüm cezalar
   const [isLoading, setIsLoading] = useState(false);
 
   // -----------------------------
   // FILTERS (local)
   // -----------------------------
-  const [searchQuery, setSearchQuery] = useState(""); // ✅ Üye ara artık local search
+  const [searchQuery, setSearchQuery] = useState(""); // Üye ara artık local search
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
@@ -197,7 +198,7 @@ export default function FinesPage({ onNavigate, user }) {
   // -----------------------------
   // UI
   // -----------------------------
-  const [toast, setToast] = useState("");
+  const [toast, setToast] = useState(""); // String veya JSX olabilir
   const [currentPage, setCurrentPage] = useState(1);
 
   // detail modal
@@ -260,7 +261,12 @@ export default function FinesPage({ onNavigate, user }) {
       });
       if (!res.ok) throw new Error("pay failed");
 
-      showToast("Ceza 'Ödendi' olarak işaretlendi ✅");
+      // ✅ GÜNCELLEME: Unicode yerine lucide-react CheckCircle ikonu kullanıldı
+      showToast(
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          Ceza 'Ödendi' olarak işaretlendi <CheckCircle size={18} />
+        </div>
+      );
 
       // ✅ local listede anında güncelle
       setAllFines((prev) => prev.map((x) => (x.id === fine.id ? { ...x, status: "Paid" } : x)));
@@ -284,7 +290,7 @@ export default function FinesPage({ onNavigate, user }) {
     fetchFinesOnce();
   }, []);
 
-  // filtre değişince sayfa 1 (BooksPage gibi)
+  // filtre değişince sayfa 1
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, dateFrom, dateTo]);
@@ -295,24 +301,24 @@ export default function FinesPage({ onNavigate, user }) {
   }, [detailFineId]);
 
   // -----------------------------
-  // LOCAL FILTER (BooksPage gibi)
+  // LOCAL FILTER
   // -----------------------------
   const filteredFines = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
 
-    // date range (input type="date" → YYYY-MM-DD)
+    // date range
     const fromD = dateFrom ? new Date(dateFrom + "T00:00:00") : null;
     const toD = dateTo ? new Date(dateTo + "T23:59:59") : null;
 
     return allFines.filter((f) => {
-      // text search: üye adı / öğrenci no / kitap
+      // text search
       const matchesSearch =
         !q ||
         (f.memberName ?? "").toLowerCase().includes(q) ||
         String(f.studentId ?? "").toLowerCase().includes(q) ||
         (f.book ?? "").toLowerCase().includes(q);
 
-      // date filter: createdAt varsa onu kullan, yoksa dueDate dene
+      // date filter
       let okDate = true;
       if (fromD || toD) {
         const d = parseAnyDate(f.createdAt) || parseAnyDate(f.dueDate);
@@ -329,10 +335,16 @@ export default function FinesPage({ onNavigate, user }) {
   }, [allFines, searchQuery, dateFrom, dateTo]);
 
   // -----------------------------
-  // SORTED LIST (tasarım/işlev aynı, sadece sıralama)
+  // SORTED LIST
   // -----------------------------
   const sortedFines = useMemo(() => {
-    if (!sort.key) return filteredFines;
+    if (!sort.key) {
+      return [...filteredFines].sort((a, b) => {
+        const timeA = new Date(a.createdAt || 0).getTime();
+        const timeB = new Date(b.createdAt || 0).getTime();
+        return timeB - timeA; // B - A (Descending / Yeniden Eskiye)
+      });
+    }
 
     const dirMul = sort.dir === "asc" ? 1 : -1;
 
@@ -344,18 +356,18 @@ export default function FinesPage({ onNavigate, user }) {
       if (typeof va === "number" && typeof vb === "number") {
         const diff = va - vb;
         if (diff !== 0) return diff * dirMul;
-        return Number(a.id ?? 0) - Number(b.id ?? 0); // stabil
+        return Number(a.id ?? 0) - Number(b.id ?? 0);
       }
 
       // string compare
       const cmp = String(va).localeCompare(String(vb), "tr");
       if (cmp !== 0) return cmp * dirMul;
-      return String(a.id ?? "").localeCompare(String(b.id ?? ""), "tr"); // stabil
+      return String(a.id ?? "").localeCompare(String(b.id ?? ""), "tr");
     });
   }, [filteredFines, sort]);
 
   // -----------------------------
-  // DERIVED (kartlar filtrelenmiş listeye göre)
+  // DERIVED
   // -----------------------------
   const totalUnpaid = useMemo(() => {
     return filteredFines
@@ -408,7 +420,7 @@ export default function FinesPage({ onNavigate, user }) {
       <div className="fpHeader">
         <div className="fpCrumbs">
           <span>Ana Sayfa</span>
-          <span className="sep">›</span>
+          <ChevronRight className="sep" size={14} />
           <span className="active">Cezalar</span>
         </div>
         <h1 className="fpTitle">Cezalar / Gecikme</h1>
@@ -636,7 +648,7 @@ export default function FinesPage({ onNavigate, user }) {
               <div>
                 <div className="fpModalTitle">Ceza Detayı</div>
                 <div className="fpModalSub">
-                  {detailFine?.memberName ?? "—"} • {detailFine?.studentId ?? "—"}
+                  {detailFine?.memberName ?? "-"} • {detailFine?.studentId ?? "-"}
                 </div>
               </div>
               <button className="fpModalX" type="button" onClick={closeDetail}>
@@ -658,7 +670,7 @@ export default function FinesPage({ onNavigate, user }) {
                 <div className="fpDetailGrid">
                   <div className="fpDetailItem">
                     <div className="k">Kitap</div>
-                    <div className="v">{detailFine.book || "—"}</div>
+                    <div className="v">{detailFine.book || "-"}</div>
                   </div>
                   <div className="fpDetailItem">
                     <div className="k">Gecikme</div>
@@ -679,7 +691,7 @@ export default function FinesPage({ onNavigate, user }) {
 
                   <div className="fpDetailItem">
                     <div className="k">İşlem ID</div>
-                    <div className="v">{detailFine.islemId ?? "—"}</div>
+                    <div className="v">{detailFine.islemId ?? "-"}</div>
                   </div>
                   <div className="fpDetailItem">
                     <div className="k">Oluşturma Tarihi</div>
@@ -696,7 +708,7 @@ export default function FinesPage({ onNavigate, user }) {
 
                   <div className="fpDetailItem" style={{ gridColumn: "1 / -1" }}>
                     <div className="k">Açıklama</div>
-                    <div className="v">{detailFine.aciklama ?? "—"}</div>
+                    <div className="v">{detailFine.aciklama ?? "-"}</div>
                   </div>
                 </div>
               )}

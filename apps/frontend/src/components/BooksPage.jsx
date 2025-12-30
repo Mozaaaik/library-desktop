@@ -1,5 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Search, Edit, Trash2, BookOpen, Loader2 } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  BookOpen,
+  Loader2,
+  CheckCircle,
+  X,
+  ChevronRight,
+  AlertCircle,
+} from "lucide-react";
 import "../pages/BooksPage.css";
 import "../pages/MembersPage.css"; // modal tasarımı
 
@@ -79,7 +90,12 @@ export default function BooksPage({ onNavigate, user }) {
       setBooks(mapped);
     } catch (e) {
       console.error("Books fetch error:", e);
-      showToast("Kitaplar yüklenirken hata oluştu ❌");
+      // Hata Toast Iconlu
+      showToast(
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          Kitaplar yüklenirken hata oluştu <AlertCircle size={18} />
+        </div>
+      );
       setBooks([]);
     } finally {
       setIsLoading(false);
@@ -238,7 +254,13 @@ export default function BooksPage({ onNavigate, user }) {
 
       if (!res.ok) throw new Error("Kitap kaydedilemedi");
 
-      showToast(formMode === "add" ? "Kitap eklendi ✅" : "Kitap güncellendi ✅");
+      // Başarılı Toast Iconlu
+      showToast(
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {formMode === "add" ? "Kitap eklendi" : "Kitap güncellendi"}
+          <CheckCircle size={18} />
+        </div>
+      );
       closeForm();
 
       // ✅ Members gibi: işlem sonrası listeyi yenile
@@ -269,7 +291,12 @@ export default function BooksPage({ onNavigate, user }) {
 
       if (!res.ok) throw new Error("Kitap silinemedi");
 
-      showToast("Kitap silindi ✅");
+      // Silme Başarılı Toast Iconlu
+      showToast(
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          Kitap silindi <CheckCircle size={18} />
+        </div>
+      );
 
       // Anında UI’dan kaldır
       setBooks((prev) => prev.filter((b) => b.id !== book.id));
@@ -288,9 +315,9 @@ export default function BooksPage({ onNavigate, user }) {
         <div>
           <div className="breadcrumbs">
             <span>Ana Sayfa</span>
-            <span className="crumbSep">›</span>
+            <ChevronRight className="crumbSep" size={14} />
             <span>Kitaplar</span>
-            <span className="crumbSep">›</span>
+            <ChevronRight className="crumbSep" size={14} />
             <span className="crumbActive">Liste</span>
           </div>
 
@@ -486,7 +513,7 @@ export default function BooksPage({ onNavigate, user }) {
                 </div>
               </div>
               <button className="mpX" type="button" onClick={closeForm}>
-                ✕
+                <X size={18} />
               </button>
             </div>
 

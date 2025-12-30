@@ -1,90 +1,141 @@
 /* DynamicQueryPage.css */
 
-:root{
-  --bg0:#070b14;
-  --bg1:#0b1020;
-  --card: rgba(18,22,31,.82);
-  --stroke:#1e293b;
-  --text:#e5e7eb;
-  --muted:#94a3b8;
-  --muted2:#64748b;
-  --input:#0a0e1a;
-  --cyan:#22d3ee;
-  --cyan2:#06b6d4;
-  --green:#22c55e;
-  --red:#ef4444;
-  --purple:#a855f7;
+:root {
+  --bg0: #070b14;
+  --bg1: #0b1020;
+  --card: rgba(18, 22, 31, 0.82);
+  --stroke: #1e293b;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --muted2: #64748b;
+  --input: #0a0e1a;
+  --cyan: #22d3ee;
+  --cyan2: #06b6d4;
+  --green: #22c55e;
+  --red: #ef4444;
+  --purple: #a855f7;
 }
 
-.dq-page{
+/* === 1. SAYFA DÜZENİ (Scroll Kilitlendi) === */
+.dq-page {
   padding: 24px;
-  min-height: 100vh;
-  background:
-    radial-gradient(1200px 600px at 35% 15%, rgba(34, 211, 238, .10), transparent 60%),
-    radial-gradient(900px 600px at 85% 55%, rgba(168, 85, 247, .08), transparent 55%),
-    radial-gradient(900px 700px at 20% 90%, rgba(34, 197, 94, .06), transparent 55%),
+  height: 100vh; /* Ekran boyuna sabitle */
+  overflow: hidden; /* Dış scroll'u kapat */
+  display: flex;
+  flex-direction: column;
+
+  background: radial-gradient(
+      1200px 600px at 35% 15%,
+      rgba(34, 211, 238, 0.1),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 600px at 85% 55%,
+      rgba(168, 85, 247, 0.08),
+      transparent 55%
+    ),
+    radial-gradient(
+      900px 700px at 20% 90%,
+      rgba(34, 197, 94, 0.06),
+      transparent 55%
+    ),
     linear-gradient(180deg, var(--bg0), var(--bg1));
   color: var(--text);
 }
 
-.dq-grid{
-  margin-top: 18px;
+.dq-header {
+  flex-shrink: 0; /* Header büzüşmesin */
+  margin-bottom: 14px;
+}
+
+/* === 2. GRID YAPISI (Alan Doldurma) === */
+.dq-grid {
+  flex: 1; /* Kalan boşluğu doldur */
   display: grid;
   grid-template-columns: 380px 1fr;
   gap: 18px;
+  overflow: hidden; /* İçerik taşarsa gizle (alt elemanlar scroll olacak) */
+  padding-bottom: 4px; /* Alt sınır için ufak boşluk */
 }
 
-@media (max-width: 1100px){
-  .dq-grid{
+/* === 3. SOL PANEL (Kendi içinde Scroll) === */
+.dq-left {
+  overflow-y: auto; /* Dikey scroll */
+  padding-right: 6px; /* Scrollbar payı */
+  display: flex;
+  flex-direction: column;
+}
+
+/* === 4. SAĞ PANEL (Alan Doldurma) === */
+.dq-right {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+@media (max-width: 1100px) {
+  .dq-page {
+    height: auto;
+    overflow-y: auto;
+  }
+  .dq-grid {
     grid-template-columns: 1fr;
+    overflow: visible;
+  }
+  .dq-left,
+  .dq-right {
+    overflow: visible;
+    height: auto;
   }
 }
 
-.dq-card{
+.dq-card {
   background: var(--card);
   border: 1px solid var(--stroke);
   border-radius: 22px;
-  box-shadow: 0 18px 60px rgba(0,0,0,.28);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
 }
 
-.dq-card--sticky{
+/* Sol taraftaki sticky mantığı artık gerekmiyor ama mobilde kalsın */
+.dq-card--sticky {
   position: sticky;
   top: 18px;
 }
 
-.dq-card__title{
+.dq-card__title {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 18px 18px 0 18px;
 }
 
-.dq-card__title h3{
+.dq-card__title h3 {
   margin: 0;
   font-size: 16px;
   font-weight: 700;
 }
 
-.dq-form{
+.dq-form {
   padding: 16px 18px 18px 18px;
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-.dq-field{
+.dq-field {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.dq-label{
+.dq-label {
   font-size: 12px;
   color: var(--muted);
 }
 
 .dq-input,
-.dq-select{
+.dq-select {
   width: 100%;
   height: 42px;
   padding: 0 12px;
@@ -95,17 +146,17 @@
   outline: none;
 }
 
-.dq-input::placeholder{
-  color: rgba(148,163,184,.55);
+.dq-input::placeholder {
+  color: rgba(148, 163, 184, 0.55);
 }
 
 .dq-input:focus,
-.dq-select:focus{
-  border-color: rgba(34, 211, 238, .55);
-  box-shadow: 0 0 0 3px rgba(34, 211, 238, .12);
+.dq-select:focus {
+  border-color: rgba(34, 211, 238, 0.55);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.12);
 }
 
-.dq-checkboxRow{
+.dq-checkboxRow {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -115,31 +166,31 @@
   border-radius: 14px;
 }
 
-.dq-checkbox{
+.dq-checkbox {
   width: 16px;
   height: 16px;
   accent-color: var(--cyan2);
 }
 
-.dq-checkboxLabel{
+.dq-checkboxLabel {
   font-size: 13px;
   color: #cbd5e1;
   user-select: none;
 }
 
-.dq-divider{
+.dq-divider {
   height: 1px;
-  background: rgba(30,41,59,.9);
+  background: rgba(30, 41, 59, 0.9);
   margin: 2px 0;
 }
 
-.dq-actions{
+.dq-actions {
   display: flex;
   gap: 10px;
   margin-top: 2px;
 }
 
-.dq-btn{
+.dq-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -148,71 +199,80 @@
   padding: 0 14px;
   border-radius: 14px;
   border: 1px solid var(--stroke);
-  background: rgba(15, 23, 42, .35);
+  background: rgba(15, 23, 42, 0.35);
   color: var(--text);
   cursor: pointer;
-  transition: transform .08s ease, background .15s ease, border-color .15s ease;
+  transition: transform 0.08s ease, background 0.15s ease,
+    border-color 0.15s ease;
   user-select: none;
 }
 
-.dq-btn:hover{
-  background: rgba(30, 41, 59, .35);
+.dq-btn:hover {
+  background: rgba(30, 41, 59, 0.35);
 }
 
-.dq-btn:active{
+.dq-btn:active {
   transform: translateY(1px);
 }
 
-.dq-btn:disabled{
-  opacity: .55;
+.dq-btn:disabled {
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
-.dq-btn--primary{
+.dq-btn--primary {
   flex: 1;
   border: none;
   background: linear-gradient(90deg, var(--cyan2), #0891b2);
-  box-shadow: 0 12px 30px rgba(34,211,238,.14);
+  box-shadow: 0 12px 30px rgba(34, 211, 238, 0.14);
 }
 
-.dq-btn--primary:hover{
+.dq-btn--primary:hover {
   background: linear-gradient(90deg, #0891b2, var(--cyan2));
 }
 
-.dq-btn--icon{
+.dq-btn--icon {
   width: 46px;
   padding: 0;
 }
 
-.dq-btn--ghost{
+.dq-btn--ghost {
   justify-content: flex-start;
   padding-left: 12px;
 }
 
-.dq-icon{
+.dq-icon {
   width: 16px;
   height: 16px;
 }
 
-.dq-icon--cyan{
+.dq-icon--cyan {
   color: var(--cyan);
 }
 
-.dq-spin{
-  animation: dqspin .9s linear infinite;
+.dq-spin {
+  animation: dqspin 0.9s linear infinite;
 }
 
-@keyframes dqspin{
-  from{ transform: rotate(0); }
-  to{ transform: rotate(360deg); }
+@keyframes dqspin {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* Results card */
-.dq-resultsCard{
+/* === 5. SONUÇ KARTI (Tam Yükseklik) === */
+.dq-resultsCard {
   overflow: hidden;
+  display: flex; /* Flex eklendi */
+  flex-direction: column; /* Dikey dizilim */
+  height: 100%; /* Yüksekliği doldur */
 }
 
-.dq-resultsHeader{
+.dq-resultsHeader {
+  flex-shrink: 0; /* Header sabit */
   padding: 18px;
   border-bottom: 1px solid var(--stroke);
   display: flex;
@@ -221,135 +281,173 @@
   gap: 12px;
 }
 
-.dq-resultsHeader h3{
+.dq-resultsHeader h3 {
   margin: 0;
   font-size: 16px;
   font-weight: 700;
 }
 
-.dq-subText{
+.dq-subText {
   margin: 6px 0 0 0;
   font-size: 12px;
   color: var(--muted);
 }
 
-.dq-accent{
+.dq-accent {
   color: var(--cyan);
   font-weight: 700;
 }
 
-.dq-export{
+.dq-export {
   display: flex;
   gap: 10px;
+  position: relative;
+  z-index: 50;
+  pointer-events: auto;
 }
 
-.dq-btn--export{
+.dq-btn--export {
   height: 36px;
   padding: 0 12px;
   border-radius: 12px;
-  background: rgba(15, 23, 42, .25);
+  background: rgba(15, 23, 42, 0.25);
+  pointer-events: auto;
 }
 
-.dq-btn--excel:hover{
-  border-color: rgba(34, 197, 94, .35);
-  background: rgba(34, 197, 94, .10);
+.dq-btn--excel:hover {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.1);
   color: #86efac;
 }
 
-.dq-btn--pdf:hover{
-  border-color: rgba(239, 68, 68, .35);
-  background: rgba(239, 68, 68, .10);
+.dq-btn--pdf:hover {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.1);
   color: #fca5a5;
 }
 
-.dq-resultsBody{
-  padding: 0;
+/* === 6. TABLO GÖVDESİ (Asıl Scroll Alanı) === */
+.dq-resultsBody {
+  flex: 1; /* Kalan alanı kapla */
+  overflow-y: auto; /* Scroll burada olacak */
+  padding: 0 10px;
+  position: relative;
 }
 
 /* Empty state */
-.dq-empty{
+.dq-empty {
   padding: 80px 18px;
   text-align: center;
   color: var(--muted);
 }
 
-.dq-emptyIcon{
+.dq-emptyIcon {
   width: 46px;
   height: 46px;
-  opacity: .55;
+  opacity: 0.55;
 }
 
 /* Skeleton */
-.dq-skeletonWrap{
+.dq-skeletonWrap {
   padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.dq-skeletonRow{
+.dq-skeletonRow {
   height: 44px;
   border-radius: 14px;
   background: linear-gradient(
     90deg,
-    rgba(30, 41, 59, .22),
-    rgba(148, 163, 184, .10),
-    rgba(30, 41, 59, .22)
+    rgba(30, 41, 59, 0.22),
+    rgba(148, 163, 184, 0.1),
+    rgba(30, 41, 59, 0.22)
   );
   background-size: 200% 100%;
   animation: dqskeleton 1.1s ease infinite;
-  border: 1px solid rgba(30,41,59,.7);
+  border: 1px solid rgba(30, 41, 59, 0.7);
 }
 
-@keyframes dqskeleton{
-  0%{ background-position: 0% 0; }
-  100%{ background-position: -200% 0; }
+@keyframes dqskeleton {
+  0% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
-/* Table */
-.dq-tableWrap{
+/* === TABLE STYLES === */
+.dq-tableWrap {
   overflow-x: auto;
+  padding-top: 10px;
 }
 
-.dq-table{
+.dq-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate !important;
+  border-spacing: 0 8px !important;
 }
 
-.dq-table thead th{
+/* === 7. STICKY HEADER (Tablo başlığı kaymasın) === */
+.dq-table thead th {
+  position: sticky; /* Sabitle */
+  top: 0;
+  z-index: 20;
   text-align: left;
   font-size: 12px;
   font-weight: 700;
   color: var(--muted);
-  padding: 14px 14px;
-  border-bottom: 1px solid var(--stroke);
-  background: rgba(10,14,26,.25);
+  padding: 10px 14px; /* Padding artırıldı */
+  border-bottom: none !important;
+  /* Sticky olduğunda arkası görünmesin diye renk verildi */
+  background: rgba(18, 22, 31, 0.95) !important;
+  backdrop-filter: blur(4px);
 }
 
-.dq-table tbody td{
-  padding: 14px 14px;
-  border-bottom: 1px solid rgba(30, 41, 59, .75);
+.dq-table tbody tr {
+  background: rgba(16, 20, 35, 0.6);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dq-table tbody tr:hover {
+  background: rgba(30, 41, 59, 0.8) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dq-table tbody td {
+  padding: 16px 14px;
+  border: none !important;
   font-size: 13px;
   color: #cbd5e1;
+  vertical-align: middle;
 }
 
-.dq-table tbody tr:hover{
-  background: rgba(148,163,184,.06);
+.dq-table tbody tr td:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+.dq-table tbody tr td:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
-.dq-tdTitle{
+.dq-tdTitle {
   font-weight: 700;
   color: #ffffff;
 }
 
-.dq-mono{
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+.dq-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
   font-size: 12px;
-  color: rgba(148,163,184,.85);
+  color: rgba(148, 163, 184, 0.85);
 }
 
 /* Badges */
-.dq-badge{
+.dq-badge {
   display: inline-flex;
   align-items: center;
   height: 26px;
@@ -360,94 +458,164 @@
   border: 1px solid transparent;
 }
 
-.dq-badge--purple{
-  background: rgba(168,85,247,.16);
-  border-color: rgba(168,85,247,.26);
+.dq-badge--purple {
+  background: rgba(168, 85, 247, 0.16);
+  border-color: rgba(168, 85, 247, 0.26);
   color: #d8b4fe;
 }
 
-.dq-badge--green{
-  background: rgba(34,197,94,.14);
-  border-color: rgba(34,197,94,.26);
+.dq-badge--green {
+  background: rgba(34, 197, 94, 0.14);
+  border-color: rgba(34, 197, 94, 0.26);
   color: #86efac;
 }
 
-.dq-badge--red{
-  background: rgba(239,68,68,.14);
-  border-color: rgba(239,68,68,.26);
+.dq-badge--red {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.26);
   color: #fca5a5;
 }
 
-/* Pagination */
-.dq-pagination{
-  padding: 14px 18px;
-  border-top: 1px solid var(--stroke);
+/* Pagination Footer - Sabit değil, listenin altında */
+.dq-tableFooter {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(10, 14, 26, 0.4);
+  border-top: 1px solid var(--stroke);
+  margin-top: 10px;
+  border-radius: 0 0 12px 12px;
+  flex-shrink: 0; /* Footer büzüşmesin */
 }
 
-.dq-pageBtns{
+.dq-showInfo {
+  font-size: 13px;
+  color: rgba(148, 163, 184, 0.75);
+}
+
+.dq-showInfo b {
+  color: #f1f5f9;
+  font-weight: 700;
+  margin: 0 3px;
+}
+
+.dq-paginationRight {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 6px;
 }
 
-.dq-header{
-  margin-bottom: 14px;
+.dq-pageNavBtn {
+  background: rgba(15, 23, 42, 0.6);
+  color: #cbd5e1;
+  border: 1px solid rgba(51, 65, 85, 0.6);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.dq-breadcrumbs{
+.dq-pageNavBtn:hover:not(:disabled) {
+  background: rgba(30, 41, 59, 1);
+  color: #fff;
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+.dq-pageNavBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.dq-pageNumBtn {
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.6);
+  color: #94a3b8;
+  border: 1px solid rgba(51, 65, 85, 0.4);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dq-pageNumBtn:hover {
+  background: rgba(30, 41, 59, 0.9);
+  color: #fff;
+}
+
+.dq-pageNumBtn.active {
+  background: rgba(6, 182, 212, 0.15);
+  color: #22d3ee;
+  border-color: rgba(34, 211, 238, 0.4);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.1);
+}
+
+.dq-breadcrumbs {
   font-size: 12px;
-  color: rgba(148,163,184,.8);
+  color: rgba(148, 163, 184, 0.8);
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
 }
 
-.dq-sep{
-  opacity: .6;
+.dq-sep {
+  opacity: 0.6;
 }
 
-.dq-bc-active{
-  color: rgba(34,211,238,.95);
+.dq-bc-active {
+  color: rgba(34, 211, 238, 0.95);
   font-weight: 700;
 }
 
-.dq-headerRow{
+.dq-headerRow {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 12px;
 }
 
-.dq-title{
+.dq-title {
   margin: 0;
   font-size: 26px;
   font-weight: 800;
-  letter-spacing: .2px;
+  letter-spacing: 0.2px;
 }
 
-.dq-desc{
+.dq-desc {
   margin: 6px 0 0 0;
-  color: rgba(148,163,184,.85);
+  color: rgba(148, 163, 184, 0.85);
   font-size: 13px;
 }
 
-.dq-export {
-  position: relative;
-  z-index: 50;
-  pointer-events: auto;
-}
-
-.dq-btn--export {
-  pointer-events: auto;
-}
-
-/* Eğer header üstünde dekor/overlay varsa tıklamayı çalmasın */
 .dq-resultsHeader::before,
 .dq-resultsHeader::after {
   pointer-events: none;
 }
 
+/* === CUSTOM SCROLLBARS (Koyu Tema) === */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(51, 65, 85, 0.6);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 0.8);
+}
