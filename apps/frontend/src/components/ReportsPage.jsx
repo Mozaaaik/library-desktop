@@ -40,7 +40,7 @@ function exportXlsx(filename, sheetName, rows, columns) {
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, sheetName);
 
-  // ✅ Browser’da en stabil yöntem: array buffer -> Blob -> saveAs
+  // Browser’da en stabil yöntem: array buffer -> Blob -> saveAs
   const arrayBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
   const blob = new Blob([arrayBuffer], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -50,104 +50,6 @@ function exportXlsx(filename, sheetName, rows, columns) {
 }
 
 const API = "http://localhost:3000";
-
-function safeDateISO(d) {
-  // input: "YYYY-MM-DD"
-  if (!d) return "";
-  return String(d).slice(0, 10);
-}
-
-function toCsv(rows, columns) {
-  const esc = (v) => {
-    const s = v === null || v === undefined ? "" : String(v);
-    if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
-    return s;
-  };
-  const header = columns.map((c) => esc(c.label)).join(",");
-  const body = rows
-    .map((r) => columns.map((c) => esc(r[c.key])).join(","))
-    .join("\n");
-  return `${header}\n${body}`;
-}
-
-function downloadBlob(filename, content, mime) {
-  const blob = new Blob([content], { type: mime });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-function printTablePdf(title, columns, rows) {
-  const html = `
-  <html>
-    <head>
-      <title>${title}</title>
-      <style>
-        body { font-family: Arial, sans-serif; padding: 18px; }
-        h2 { margin: 0 0 12px 0; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; font-size: 12px; }
-        th { background: #f2f2f2; text-align: left; }
-      </style>
-    </head>
-    <body>
-      <h2>${title}</h2>
-      <table>
-        <thead>
-          <tr>${columns.map((c) => `<th>${c.label}</th>`).join("")}</tr>
-        </thead>
-        <tbody>
-          ${rows
-            .map(
-              (r) =>
-                `<tr>${columns
-                  .map((c) => `<td>${r[c.key] ?? ""}</td>`)
-                  .join("")}</tr>`
-            )
-            .join("")}
-        </tbody>
-      </table>
-      <script>
-        window.onload = () => { window.print(); };
-      </script>
-    </body>
-  </html>`;
-  const w = window.open("", "_blank");
-  if (!w) return alert("Pop-up engellendi. PDF için pop-up izni ver.");
-  w.document.open();
-  w.document.write(html);
-  w.document.close();
-}
-
-function isValidDate(d) {
-  return d && !Number.isNaN(new Date(d).getTime());
-}
-
-function daysBetween(a, b) {
-  // a, b: Date
-  const ms = 24 * 60 * 60 * 1000;
-  return Math.floor((a.getTime() - b.getTime()) / ms);
-}
-
-function computeStatus(loan) {
-  // returnDate varsa returned
-  if (loan.returnDate) return "returned";
-
-  // dueDate yoksa active say
-  if (!loan.dueDate || !isValidDate(loan.dueDate)) return "active";
-
-  const due = new Date(loan.dueDate);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  due.setHours(0, 0, 0, 0);
-
-  return due < today ? "overdue" : "active";
-}
 
 function exportPdfBlob(filename, title, columns, rows) {
   const headerRow = columns.map((c) => ({
@@ -222,7 +124,7 @@ function exportPdfBlob(filename, title, columns, rows) {
     },
   };
 
-  // ✅ Excel gibi direkt indir
+  //  Excel gibi direkt indir
   pdfMake.createPdf(docDefinition).getBlob((blob) => {
     saveAs(blob, filename);
   });
@@ -286,8 +188,8 @@ export default function ReportsPage() {
     activeTab === "date-range"
       ? dateRows.length
       : activeTab === "overdue"
-        ? overdueRows.length
-        : mostRows.length;
+      ? overdueRows.length
+      : mostRows.length;
   const totalPages = Math.ceil(totalRows / itemsPerPage);
 
   // TAB1 fetch
@@ -296,25 +198,20 @@ export default function ReportsPage() {
     setDateLoaded(false);
 
     try {
-      // 1. Backend'deki /reports/loans endpoint'i için query parametrelerini hazırla
       const params = new URLSearchParams({
         startDate: startDate,
         endDate: endDate,
-        memberId: selectedMemberId, // "all" veya sayı
-        category: selectedCategory, // "all" veya kategori adı
-        status: selectedStatus, // "all", "returned", "active", "overdue"
+        memberId: selectedMemberId,
+        category: selectedCategory,
+        status: selectedStatus,
       });
 
       const url = `${API}/reports/loans?${params.toString()}`;
 
-      // 2. İsteği at
       const res = await fetch(url);
       if (!res.ok) throw new Error("Rapor verisi alınamadı");
 
       const data = await res.json();
-
-      // 3. Veriyi tabloya yerleştir
-      // Backend zaten 'memberName', 'studentNo', 'loanDate' gibi alanları dönüyor
       setDateRows(Array.isArray(data) ? data : []);
     } catch (e) {
       console.error("Rapor hatası:", e);
@@ -334,36 +231,8 @@ export default function ReportsPage() {
     setDateRows([]);
     setDateLoaded(false);
   };
-  // ---- helpers (ReportsPage içinde yukarıya koyabilirsin) ----
-  function extractArray(payload) {
-    if (Array.isArray(payload)) return payload;
-    if (Array.isArray(payload?.data)) return payload.data;
-    if (Array.isArray(payload?.loans)) return payload.loans;
-    if (Array.isArray(payload?.rows)) return payload.rows;
-    return [];
-  }
 
-  function normalizeDateToISO(v) {
-    if (!v) return "";
-    const s = String(v);
-
-    // ISO gibi: 2024-12-29T...
-    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
-
-    // 29/12/2024
-    const slash = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
-    if (slash) return `${slash[3]}-${slash[2]}-${slash[1]}`;
-
-    // 29.12.2024
-    const dot = s.match(/^(\d{2})\.(\d{2})\.(\d{4})/);
-    if (dot) return `${dot[3]}-${dot[2]}-${dot[1]}`;
-
-    // fallback
-    return s.slice(0, 10);
-  }
-
-  // ---- TAB2 fetch (bunu komple değiştir) ----
-  // TAB2 fetch - DOĞRU ENDPOINT
+  // TAB2 fetch
   const fetchOverdue = async () => {
     setOverdueLoading(true);
     setOverdueLoaded(false);
@@ -373,23 +242,18 @@ export default function ReportsPage() {
       params.set("memberId", overdueMemberId || "all");
       params.set("category", overdueCategory || "all");
 
-      // backend minDays bekliyorsa:
       const min = (minOverdueDays ?? "").toString().trim();
       params.set("minDays", min !== "" ? min : "0");
 
       const url = `${API}/reports/overdue?${params.toString()}`;
-      console.log("[OVERDUE] URL:", url);
-
+      
       const res = await fetch(url);
       if (!res.ok) {
-        console.error("[OVERDUE] failed:", res.status);
         setOverdueRows([]);
         return;
       }
 
       const data = await res.json();
-      console.log("[OVERDUE] response sample:", data?.[0]);
-
       const rows = Array.isArray(data) ? data : (data?.data ?? []);
       setOverdueRows(rows);
     } catch (e) {
@@ -434,7 +298,6 @@ export default function ReportsPage() {
         loanDate: (x.loanDate ?? x.OduncTarihi ?? x.tarih ?? "").slice(0, 10),
       }));
 
-      // tarih filtresi
       rows = rows.filter((r) => {
         if (borrowStartDate && r.loanDate && r.loanDate < borrowStartDate)
           return false;
@@ -445,7 +308,6 @@ export default function ReportsPage() {
         return true;
       });
 
-      // group by kitap
       const map = new Map();
       for (const r of rows) {
         const key = `${r.bookName}__${r.author}__${r.category}`;
@@ -545,12 +407,6 @@ export default function ReportsPage() {
   };
 
   const exportPDF = () => {
-    const statusMap = {
-      active: "Aktif",
-      returned: "Teslim Edildi",
-      overdue: "Gecikmiş",
-    };
-
     if (activeTab === "date-range" && dateLoaded) {
       const cols = [
         { key: "memberName", label: "Üye Adı" },
@@ -561,18 +417,11 @@ export default function ReportsPage() {
         { key: "dueDate", label: "Son Teslim" },
         { key: "status", label: "Durum" },
       ];
-
-      // ✅ DÜZELTME BURADA: Veriyi map ile dönüp status alanını Türkçeleştiriyoruz
-      const rowsForPdf = dateRows.map((row) => ({
-        ...row,
-        status: statusMap[row.status] || row.status, // "active" ise "Aktif" yap, yoksa aynen bırak
-      }));
-
       exportPdfBlob(
         "tarih_araligi_odunc.pdf",
         "Tarih Aralığına Göre Ödünç Raporu",
         cols,
-        rowsForPdf // dateRows yerine rowsForPdf gönderiyoruz
+        dateRows
       );
       return;
     }
@@ -622,28 +471,66 @@ export default function ReportsPage() {
     return false;
   }, [activeTab, dateLoaded, overdueLoaded, mostLoaded]);
 
-  const PaginationControls = () =>
-    totalPages > 1 && (
-      <div className="repPagination">
-        <button
-          className="repPageBtn"
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage((p) => p - 1)}
-        >
-          <ChevronLeft size={18} /> Geri
-        </button>
-        <span className="repPageInfo">
-          Sayfa {currentPage} / {totalPages}
-        </span>
-        <button
-          className="repPageBtn"
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage((p) => p + 1)}
-        >
-          İleri <ChevronRight size={18} />
-        </button>
+  // === YENİ PAGINATION  ===
+  const PaginationControls = () => {
+    if (totalRows === 0) return null;
+
+    // Gösterilen kayıt aralığını hesapla
+    const startIdx = (currentPage - 1) * itemsPerPage + 1;
+    const endIdx = Math.min(currentPage * itemsPerPage, totalRows);
+
+    // 1-2-3 numaralarını oluştur
+    const getPageNumbers = () => {
+      const pages = [];
+      let start = Math.max(1, currentPage - 2);
+      let end = Math.min(totalPages, start + 4);
+      if (end - start < 4) {
+        start = Math.max(1, end - 4);
+      }
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      return pages;
+    };
+
+    return (
+      <div className="repTableFooter">
+        {/* SOL: Gösterilen: 1 - 7 / 17 */}
+        <div className="repShowInfo">
+          Gösterilen: <b>{startIdx} - {endIdx}</b> / <b>{totalRows}</b>
+        </div>
+
+        {/* SAĞ: Butonlar */}
+        <div className="repPaginationRight">
+          <button
+            className="repPageNavBtn"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => p - 1)}
+          >
+            Önceki
+          </button>
+
+          {getPageNumbers().map((num) => (
+            <button
+              key={num}
+              className={`repPageNumBtn ${currentPage === num ? "active" : ""}`}
+              onClick={() => setCurrentPage(num)}
+            >
+              {num}
+            </button>
+          ))}
+
+          <button
+            className="repPageNavBtn"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((p) => p + 1)}
+          >
+            Sonraki
+          </button>
+        </div>
       </div>
     );
+  };
 
   // küçük: tab değişince scroll toparla
   useEffect(() => {
@@ -659,8 +546,6 @@ export default function ReportsPage() {
         const mRaw = mRes.ok ? await mRes.json() : [];
 
         const mArr = Array.isArray(mRaw) ? mRaw : (mRaw?.data ?? []);
-        console.log("RAW /members:", mRaw);
-        console.log("FIRST MEMBER:", mArr?.[0]);
 
         const normalizedMembers = (Array.isArray(mArr) ? mArr : [])
           .map((m) => {
@@ -672,7 +557,6 @@ export default function ReportsPage() {
               m.UyeAdi ??
               m.uyeAdi ??
               m.fullName ??
-              // ✅ backend: ad + soyad
               [m.ad, m.soyad].filter(Boolean).join(" ");
 
             const studentNo =
@@ -681,7 +565,6 @@ export default function ReportsPage() {
               m.ogrenciNo ??
               m.student_no ??
               m.StudentNo ??
-              // ✅ backend: studentId
               m.studentId ??
               m.studentID;
 
@@ -703,7 +586,6 @@ export default function ReportsPage() {
           : [];
         setCategories(names);
 
-        console.log("members normalized:", normalizedMembers);
       } catch (e) {
         console.error("Dropdown load error:", e);
         setMembers([]);
@@ -914,82 +796,60 @@ export default function ReportsPage() {
                   <p>Filtre seçip raporu getirin</p>
                 </div>
               ) : (
-                <div className="repTableWrap">
-                  <table className="repTable">
-                    <thead>
-                      <tr>
-                        <th>Üye Adı</th>
-                        <th>Öğrenci No</th>
-                        <th>Kitap Adı</th>
-                        <th>Kategori</th>
-                        <th>Ödünç Tarihi</th>
-                        <th>Son Teslim Tarihi</th>
-                        <th>Teslim Durumu</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {paginatedData.map((r) => (
-                        <tr key={r.id}>
-                          <td className="textWhite">{r.memberName}</td>
-                          <td className="textMuted">{r.studentNo}</td>
-                          <td className="textSoft">{r.bookName}</td>
-                          <td>
-                            <span className="repBadge purple">
-                              {r.category}
-                            </span>
-                          </td>
-                          <td className="textMuted">{r.loanDate}</td>
-                          <td className="textMuted">{r.dueDate}</td>
-                          <td>
-                            {r.status === "returned" && (
-                              <span className="repBadge green">
-                                Teslim Edildi
-                              </span>
-                            )}
-                            {r.status === "active" && (
-                              <span className="repBadge cyan">Aktif</span>
-                            )}
-                            {r.status === "overdue" && (
-                              <span className="repBadge red">Gecikmiş</span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                      {dateRows.length === 0 && (
+                <>
+                  <div className="repTableWrap">
+                    <table className="repTable">
+                      <thead>
                         <tr>
-                          <td colSpan={7} className="repNoRow">
-                            Kayıt bulunamadı.
-                          </td>
+                          <th>Üye Adı</th>
+                          <th>Öğrenci No</th>
+                          <th>Kitap Adı</th>
+                          <th>Kategori</th>
+                          <th>Ödünç Tarihi</th>
+                          <th>Son Teslim Tarihi</th>
+                          <th>Teslim Durumu</th>
                         </tr>
-                      )}
-                    </tbody>
-                  </table>
-                  {totalPages > 1 && (
-                    <div className="repPagination">
-                      <button
-                        disabled={currentPage === 1}
-                        onClick={() => setCurrentPage((prev) => prev - 1)}
-                        className="repPageBtn"
-                      >
-                        Geri
-                      </button>
-
-                      <div className="repPageInfo">
-                        <span>
-                          Sayfa {currentPage} / {totalPages}
-                        </span>
-                      </div>
-
-                      <button
-                        disabled={currentPage === totalPages}
-                        onClick={() => setCurrentPage((prev) => prev + 1)}
-                        className="repPageBtn"
-                      >
-                        İleri
-                      </button>
-                    </div>
-                  )}
-                </div>
+                      </thead>
+                      <tbody>
+                        {paginatedData.map((r) => (
+                          <tr key={r.id}>
+                            <td className="textWhite">{r.memberName}</td>
+                            <td className="textMuted">{r.studentNo}</td>
+                            <td className="textSoft">{r.bookName}</td>
+                            <td>
+                              <span className="repBadge purple">
+                                {r.category}
+                              </span>
+                            </td>
+                            <td className="textMuted">{r.loanDate}</td>
+                            <td className="textMuted">{r.dueDate}</td>
+                            <td>
+                              {r.status === "returned" && (
+                                <span className="repBadge green">
+                                  Teslim Edildi
+                                </span>
+                              )}
+                              {r.status === "active" && (
+                                <span className="repBadge cyan">Aktif</span>
+                              )}
+                              {r.status === "overdue" && (
+                                <span className="repBadge red">Gecikmiş</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                        {dateRows.length === 0 && (
+                          <tr>
+                            <td colSpan={7} className="repNoRow">
+                              Kayıt bulunamadı.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                  <PaginationControls />
+                </>
               )}
             </div>
           </div>
@@ -1130,57 +990,60 @@ export default function ReportsPage() {
                   <p>Filtre seçip raporu getirin</p>
                 </div>
               ) : (
-                <div className="repTableWrap">
-                  <table className="repTable">
-                    <thead>
-                      <tr>
-                        <th>Üye</th>
-                        <th>Kitap</th>
-                        <th>Ödünç Tarihi</th>
-                        <th>Son Teslim Tarihi</th>
-                        <th>Gecikme Günü</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {overdueRows.map((r) => (
-                        <tr key={r.id}>
-                          <td>
-                            <div className="cellStack">
-                              <div className="textWhite">{r.memberName}</div>
-                              <div className="textTiny">{r.studentNo}</div>
-                            </div>
-                          </td>
-                          <td>
-                            <div className="cellStack">
-                              <div className="textSoft">{r.bookName}</div>
-                              <div className="textTiny">{r.category}</div>
-                            </div>
-                          </td>
-                          <td className="textMuted">{r.loanDate}</td>
-                          <td className="textMuted">{r.dueDate}</td>
-                          <td>
-                            {r.overdueDays <= 3 ? (
-                              <span className="repBadge orange">
-                                {r.overdueDays} gün
-                              </span>
-                            ) : (
-                              <span className="repBadge red">
-                                {r.overdueDays} gün
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                      {overdueRows.length === 0 && (
+                <>
+                  <div className="repTableWrap">
+                    <table className="repTable">
+                      <thead>
                         <tr>
-                          <td colSpan={5} className="repNoRow">
-                            Kayıt bulunamadı.
-                          </td>
+                          <th>Üye</th>
+                          <th>Kitap</th>
+                          <th>Ödünç Tarihi</th>
+                          <th>Son Teslim Tarihi</th>
+                          <th>Gecikme Günü</th>
                         </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {overdueRows.map((r) => (
+                          <tr key={r.id}>
+                            <td>
+                              <div className="cellStack">
+                                <div className="textWhite">{r.memberName}</div>
+                                <div className="textTiny">{r.studentNo}</div>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="cellStack">
+                                <div className="textSoft">{r.bookName}</div>
+                                <div className="textTiny">{r.category}</div>
+                              </div>
+                            </td>
+                            <td className="textMuted">{r.loanDate}</td>
+                            <td className="textMuted">{r.dueDate}</td>
+                            <td>
+                              {r.overdueDays <= 3 ? (
+                                <span className="repBadge orange">
+                                  {r.overdueDays} gün
+                                </span>
+                              ) : (
+                                <span className="repBadge red">
+                                  {r.overdueDays} gün
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                        {overdueRows.length === 0 && (
+                          <tr>
+                            <td colSpan={5} className="repNoRow">
+                              Kayıt bulunamadı.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                  <PaginationControls />
+                </>
               )}
             </div>
           </div>
@@ -1357,43 +1220,46 @@ export default function ReportsPage() {
                   <p>Filtre seçip raporu getirin</p>
                 </div>
               ) : (
-                <div className="repTableWrap">
-                  <table className="repTable">
-                    <thead>
-                      <tr>
-                        <th>Kitap Adı</th>
-                        <th>Yazar</th>
-                        <th>Kategori</th>
-                        <th>Ödünç Sayısı</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {mostRows.map((r, idx) => (
-                        <tr key={idx}>
-                          <td className="textWhite">{r.bookName}</td>
-                          <td className="textSoft">{r.author}</td>
-                          <td>
-                            <span className="repBadge purple">
-                              {r.category}
-                            </span>
-                          </td>
-                          <td>
-                            <span className="repBadge cyan strong">
-                              {r.count}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                      {mostRows.length === 0 && (
+                <>
+                  <div className="repTableWrap">
+                    <table className="repTable">
+                      <thead>
                         <tr>
-                          <td colSpan={4} className="repNoRow">
-                            Kayıt bulunamadı.
-                          </td>
+                          <th>Kitap Adı</th>
+                          <th>Yazar</th>
+                          <th>Kategori</th>
+                          <th>Ödünç Sayısı</th>
                         </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {mostRows.map((r, idx) => (
+                          <tr key={idx}>
+                            <td className="textWhite">{r.bookName}</td>
+                            <td className="textSoft">{r.author}</td>
+                            <td>
+                              <span className="repBadge purple">
+                                {r.category}
+                              </span>
+                            </td>
+                            <td>
+                              <span className="repBadge cyan strong">
+                                {r.count}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                        {mostRows.length === 0 && (
+                          <tr>
+                            <td colSpan={4} className="repNoRow">
+                              Kayıt bulunamadı.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                  <PaginationControls />
+                </>
               )}
             </div>
           </div>

@@ -342,7 +342,7 @@
   color: rgba(226, 232, 240, 0.75);
 }
 
-/* ====== TABLE CARD ====== */
+/* ====== TABLE CARD & MODERN ROWS ====== */
 .repTableCard {
   overflow: hidden;
 }
@@ -377,42 +377,70 @@
 .repTableWrap {
   width: 100%;
   overflow: auto;
+  padding: 0 10px; /* Kenarlardan hafif boşluk */
 }
 
+/* --- YENİ TABLO STİLLERİ (Görseldeki Gibi) --- */
 .repTable {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
   min-width: 860px;
+  border-collapse: separate; /* Satırları ayırmak için gerekli */
+  border-spacing: 0 8px;     /* Satırlar arası 8px boşluk */
+  margin-bottom: 10px;
 }
 
+/* Başlıklar */
 .repTable thead th {
   text-align: left;
   font-size: 12px;
   font-weight: 700;
   color: rgba(148, 163, 184, 0.8);
-  padding: 12px 14px;
-  background: rgba(10, 14, 26, 0.35);
-  border-bottom: 1px solid rgba(30, 41, 59, 0.9);
+  padding: 0 14px 8px 14px; /* Alt border yok, sadece padding */
+  background: transparent;
+  border-bottom: none;
 }
 
+/* Satır Gövdesi - Koyu Kart Görünümü */
+.repTable tbody tr {
+  background: rgba(16, 20, 35, 0.6); /* Yarı saydam koyu zemin */
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s;
+}
+
+.repTable tbody tr:hover {
+  background: rgba(30, 41, 59, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Hücreler */
 .repTable tbody td {
-  padding: 12px 14px;
-  border-bottom: 1px solid rgba(30, 41, 59, 0.65);
+  padding: 16px 14px;
+  border: none; /* İç çizgileri kaldır */
+  color: rgba(226, 232, 240, 0.85);
+  vertical-align: middle;
 }
 
-.repTable tbody tr:hover td {
-  background: rgba(148, 163, 184, 0.06);
+/* Satırın ilk ve son hücresine yuvarlak köşe */
+.repTable tbody tr td:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+.repTable tbody tr td:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 .repNoRow {
   text-align: center;
-  padding: 18px 14px;
-  color: rgba(148, 163, 184, 0.75);
+  padding: 20px;
+  color: rgba(148, 163, 184, 0.6);
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .textWhite {
   color: #f1f5f9;
+  font-weight: 600;
 }
 .textMuted {
   color: rgba(148, 163, 184, 0.85);
@@ -446,31 +474,26 @@
 .repBadge.strong {
   font-weight: 800;
 }
-
 .repBadge.purple {
   background: rgba(168, 85, 247, 0.16);
   border-color: rgba(168, 85, 247, 0.22);
   color: rgba(196, 181, 253, 0.95);
 }
-
 .repBadge.cyan {
   background: rgba(34, 211, 238, 0.14);
   border-color: rgba(34, 211, 238, 0.22);
   color: rgba(34, 211, 238, 0.95);
 }
-
 .repBadge.green {
   background: rgba(74, 222, 128, 0.14);
   border-color: rgba(74, 222, 128, 0.22);
   color: rgba(74, 222, 128, 0.95);
 }
-
 .repBadge.red {
   background: rgba(239, 68, 68, 0.14);
   border-color: rgba(239, 68, 68, 0.22);
   color: rgba(248, 113, 113, 0.95);
 }
-
 .repBadge.orange {
   background: rgba(251, 146, 60, 0.16);
   border-color: rgba(251, 146, 60, 0.24);
@@ -481,21 +504,18 @@
 .repChartCard {
   padding: 16px 18px 18px 18px;
 }
-
 .repBars {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-top: 8px;
 }
-
 .repBarRow {
   display: grid;
   grid-template-columns: 200px 1fr 60px;
   gap: 12px;
   align-items: center;
 }
-
 .repBarLabel {
   font-size: 12.5px;
   color: rgba(226, 232, 240, 0.85);
@@ -503,7 +523,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .repBarTrack {
   height: 10px;
   border-radius: 999px;
@@ -511,7 +530,6 @@
   border: 1px solid rgba(148, 163, 184, 0.1);
   overflow: hidden;
 }
-
 .repBarFill {
   height: 100%;
   border-radius: 999px;
@@ -521,7 +539,6 @@
     rgba(34, 211, 238, 0.55)
   );
 }
-
 .repBarValue {
   text-align: right;
   font-size: 12px;
@@ -529,63 +546,84 @@
   font-weight: 800;
 }
 
-/* ====== RESPONSIVE ====== */
-@media (max-width: 1100px) {
-  .repGrid {
-    grid-template-columns: 1fr;
-  }
-  .repFilters {
-    position: relative;
-    top: auto;
-  }
-  .repTable {
-    min-width: 780px;
-  }
-}
-
-@media (max-width: 620px) {
-  .repKpis {
-    grid-template-columns: 1fr;
-  }
-  .repTabs {
-    display: flex;
-    width: 100%;
-    overflow: auto;
-  }
-  .repBarRow {
-    grid-template-columns: 140px 1fr 50px;
-  }
-}
-.repPagination {
+/* ====== TABLE FOOTER & PAGINATION ====== */
+.repTableFooter {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 20px;
-  padding: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  justify-content: space-between; /* Sola bilgi, sağa butonlar */
+  padding: 16px 20px;
+  background: rgba(10, 14, 26, 0.4); /* Tablo altı hafif koyu zemin */
+  border-top: 1px solid rgba(30, 41, 59, 0.9);
 }
 
-.repPageBtn {
-  background: #1e293b;
-  color: white;
-  border: 1px solid #334155;
-  padding: 8px 16px;
-  border-radius: 6px;
+/* Sol taraftaki "Gösterilen..." yazısı */
+.repShowInfo {
+  font-size: 13px;
+  color: rgba(148, 163, 184, 0.75);
+}
+
+.repShowInfo b {
+  color: #f1f5f9;
+  font-weight: 700;
+  margin: 0 2px;
+}
+
+/* Sağ taraftaki buton grubu */
+.repPaginationRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Geri/İleri Butonları */
+.repPageNavBtn {
+  background: rgba(15, 23, 42, 0.6);
+  color: #cbd5e1;
+  border: 1px solid rgba(51, 65, 85, 0.6);
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
-.repPageBtn:hover:not(:disabled) {
-  background: #0ea5e9;
-  border-color: #0ea5e9;
+.repPageNavBtn:hover:not(:disabled) {
+  background: rgba(30, 41, 59, 1);
+  color: #fff;
+  border-color: rgba(148, 163, 184, 0.3);
 }
 
-.repPageBtn:disabled {
-  opacity: 0.5;
+.repPageNavBtn:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
-.repPageInfo {
-  font-size: 14px;
+/* Numaralı Butonlar */
+.repPageNumBtn {
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.6);
   color: #94a3b8;
+  border: 1px solid rgba(51, 65, 85, 0.4);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.repPageNumBtn:hover {
+  background: rgba(30, 41, 59, 0.9);
+  color: #fff;
+}
+
+.repPageNumBtn.active {
+  background: rgba(6, 182, 212, 0.15); /* Hafif cyan arka plan */
+  color: #22d3ee; /* Cyan yazı */
+  border-color: rgba(34, 211, 238, 0.4);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.1);
 }
