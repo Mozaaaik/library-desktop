@@ -545,6 +545,12 @@ export default function ReportsPage() {
   };
 
   const exportPDF = () => {
+    const statusMap = {
+      active: "Aktif",
+      returned: "Teslim Edildi",
+      overdue: "Gecikmiş",
+    };
+
     if (activeTab === "date-range" && dateLoaded) {
       const cols = [
         { key: "memberName", label: "Üye Adı" },
@@ -555,11 +561,18 @@ export default function ReportsPage() {
         { key: "dueDate", label: "Son Teslim" },
         { key: "status", label: "Durum" },
       ];
+
+      // ✅ DÜZELTME BURADA: Veriyi map ile dönüp status alanını Türkçeleştiriyoruz
+      const rowsForPdf = dateRows.map((row) => ({
+        ...row,
+        status: statusMap[row.status] || row.status, // "active" ise "Aktif" yap, yoksa aynen bırak
+      }));
+
       exportPdfBlob(
         "tarih_araligi_odunc.pdf",
         "Tarih Aralığına Göre Ödünç Raporu",
         cols,
-        dateRows
+        rowsForPdf // dateRows yerine rowsForPdf gönderiyoruz
       );
       return;
     }
