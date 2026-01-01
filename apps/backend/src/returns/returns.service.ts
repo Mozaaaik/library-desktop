@@ -17,7 +17,6 @@ export class ReturnsService {
         k.ISBN as isbn,
         DATE_FORMAT(oi.VerilisTarihi, '%Y-%m-%d') as borrowDate,
         DATE_FORMAT(oi.SonTeslimTarihi, '%Y-%m-%d') as dueDate,
-        -- Gecikmeyi hesaplayıp frontend'e ön bilgi verelim (Opsiyonel)
         GREATEST(DATEDIFF(NOW(), oi.SonTeslimTarihi), 0) as currentDelay
       FROM OduncIslemleri oi
       JOIN Uyeler u ON oi.UyeID = u.UyeID
@@ -46,59 +45,100 @@ export class ReturnsService {
     return rows;
   }
 
-  // 2. İADE İŞLEMİNİ YAP (SP ÇAĞIR + CEZA KONTROLÜ)
+  // 2. İADE İŞLEMİNİ VE CEZA KONTROLÜNÜ YAP
   async processReturn(islemId: number) {
-    const today =
-      new Date().toISOString().slice(0, 10) +
+    const todayDate = new Date();
+    // Tarihi MySQL formatına çevir (YYYY-MM-DD HH:mm:ss)
+    const todayStr =
+      todayDate.toISOString().slice(0, 10) +
       ' ' +
-      new Date().toTimeString().split(' ')[0]; // '2025-12-29 14:30:00'
+      todayDate.toTimeString().split(' ')[0];
 
-    const connection = await pool.getConnection(); // Transaction veya ardışık işlem için connection alıyoruz
+    // Transaction için bağlantı al
+    const connection = await pool.getConnection();
 
     try {
-      // A) Prosedürü Çağır: sp_KitapTeslimAl
-      // Bu prosedür teslim tarihini günceller ve gecikme varsa Cezalar tablosuna insert yapar.
-      // Stok artışı ise senin TR_ODUNC_UPDATE_TESLIM trigger'ın sayesinde otomatik olur.
-      await connection.query('CALL sp_KitapTeslimAl(?, ?)', [islemId, today]);
+      // İşlemleri başlat (Hata olursa geri alabilmek için)
+      await connection.beginTransaction();
 
-      // B) Ceza Oluştu mu? Kontrol Et
-      // Prosedürün geriye değer dönmediği senaryoda, oluşan cezayı tablodan buluyoruz.
-      const [cezaRows]: any = await connection.query(
-        `
-        SELECT Tutar, Aciklama 
-        FROM Cezalar 
-        WHERE IslemID = ? 
-        ORDER BY CezaID DESC LIMIT 1
-      `,
+      // A) Ödünç Bilgisini Çek (Tarih ve Üye ID lazım)
+      const [loanRows]: any = await connection.query(
+        'SELECT UyeID, SonTeslimTarihi FROM OduncIslemleri WHERE IslemID = ?',
         [islemId],
       );
 
-      const cezaBilgisi = cezaRows[0];
-
-      // Gecikme gününü bulmak için basit bir hesaplama (Mesaj için)
-      // Aciklama içinde "15 gün gecikme" yazıyor zaten, oradan parsing yapabiliriz veya null döneriz.
-      let gecikmeGun = 0;
-      let cezaTutar = 0;
-
-      if (cezaBilgisi) {
-        cezaTutar = cezaBilgisi.Tutar;
-        // Aciklama örn: "5 gün gecikme." -> Buradan sayıyı çekebiliriz veya direkt tutara bakarız.
-        const match = cezaBilgisi.Aciklama.match(/(\d+)\s+gün/);
-        if (match) gecikmeGun = parseInt(match[1]);
+      if (loanRows.length === 0) {
+        throw new Error('Ödünç kaydı bulunamadı.');
       }
+
+      const loan = loanRows[0];
+
+      // B) Kitabı İade Al (Teslim Tarihini Güncelle)
+      await connection.query(
+        'UPDATE OduncIslemleri SET TeslimTarihi = ? WHERE IslemID = ?',
+        [todayStr, islemId],
+      );
+
+      // C) Gecikme Hesapla
+      // Saat farkını yoksaymak için sadece günleri alıyoruz
+      const dueDate = new Date(loan.SonTeslimTarihi);
+      dueDate.setHours(0, 0, 0, 0);
+
+      const cleanToday = new Date(todayDate);
+      cleanToday.setHours(0, 0, 0, 0);
+
+      const diffTime = cleanToday.getTime() - dueDate.getTime();
+      const delayDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      let fineAmount = 0;
+
+      // D) Eğer Gecikme Varsa CEZA İşlemleri
+      if (delayDays > 0) {
+        const dailyFine = 5.0; // Günlük Ceza Tutarı (Örn: 5 TL)
+        fineAmount = delayDays * dailyFine;
+
+        // D1. KONTROL: Bu işlem için daha önce ceza yazılmış mı?
+        const [existingFine]: any = await connection.query(
+          'SELECT CezaID FROM Cezalar WHERE IslemID = ? LIMIT 1',
+          [islemId],
+        );
+
+        // D2. Sadece kayıt YOKSA ekle
+        if (existingFine.length === 0) {
+          await connection.query(
+            'INSERT INTO Cezalar (UyeID, IslemID, Tutar, Durum, Aciklama) VALUES (?, ?, ?, ?, ?)',
+            [
+              loan.UyeID,
+              islemId,
+              fineAmount,
+              'Odenmedi',
+              `${delayDays} gün gecikme.`,
+            ],
+          );
+        } else {
+          console.log(
+            `IslemID: ${islemId} için zaten ceza mevcut. Tekrar kayıt engellendi.`,
+          );
+        }
+      }
+
+      // Her şey yolundaysa onayla
+      await connection.commit();
 
       return {
         success: true,
         data: {
-          delayDays: gecikmeGun,
-          fineAmount: cezaTutar,
+          delayDays: delayDays > 0 ? delayDays : 0,
+          fineAmount: fineAmount,
         },
       };
     } catch (error) {
+      // Hata varsa tüm işlemleri geri al
+      await connection.rollback();
       console.error('İade Hatası:', error);
       throw new BadRequestException('İade işlemi yapılamadı: ' + error.message);
     } finally {
-      connection.release(); // Bağlantıyı havuza geri bırak
+      connection.release(); // Bağlantıyı havuza bırak
     }
   }
 }
