@@ -61,7 +61,7 @@ export class DashboardService {
       WHERE o.TeslimTarihi IS NULL 
         AND o.SonTeslimTarihi < NOW()
       GROUP BY u.UyeID, u.Ad, u.Soyad, u.OgrenciNo
-      ORDER BY overdueDays DESC, overdueCount DESC
+      ORDER BY overdueDays DESC, overdueCount DESC, u.Ad ASC, u.Soyad ASC
       LIMIT 3;
     `);
 
