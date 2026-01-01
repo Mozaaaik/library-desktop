@@ -23,13 +23,17 @@ function mapDbBookToUi(row) {
   const isbn = String(row.ISBN ?? row.isbn ?? "");
 
   const category =
-    row.KategoriAdi ??
-    row.kategori ??
-    row.category ??
-    row.KATEGORI_ADI ??
-    "—";
+    row.KategoriAdi ?? row.kategori ?? row.category ?? row.KATEGORI_ADI ?? "—";
 
+  // Mevcut Stok (Ödünçtekiler düşülmüş hali)
   const stock = Number(row.MevcutAdet ?? row.stock ?? row.MEVCUT_ADET ?? 0);
+
+  // Toplam Adet (Kütüphanedeki fiziksel toplam kitap sayısı)
+  // Backend'den ToplamAdet, total, piece vb. geliyorsa onu alıyoruz, yoksa stock'a eşitliyoruz.
+  const total = Number(
+    row.ToplamAdet ?? row.total ?? row.TOPLAM_ADET ?? row.piece ?? stock
+  );
+
   const status = stock > 0 ? "Uygun" : "Stok Yok";
 
   const publisher =
@@ -42,6 +46,7 @@ function mapDbBookToUi(row) {
     isbn,
     category,
     stock,
+    total, // Yeni eklenen alan
     status,
     publisher,
     categoryId: row.KategoriID ?? row.categoryId ?? row.KATEGORI_ID ?? "",
@@ -134,7 +139,9 @@ export default function BooksPage({ onNavigate, user }) {
         !q ||
         (book.title ?? "").toLowerCase().includes(q) ||
         (book.author ?? "").toLowerCase().includes(q) ||
-        String(book.isbn ?? "").toLowerCase().includes(q);
+        String(book.isbn ?? "")
+          .toLowerCase()
+          .includes(q);
 
       const matchesCategory =
         selectedCategoryId === "all" ||
@@ -199,7 +206,12 @@ export default function BooksPage({ onNavigate, user }) {
       isbn: book.isbn ?? "",
       publisher: book.publisher ?? "",
       categoryId: book.categoryId ?? "",
-      piece: Number.isFinite(book.stock) ? book.stock : 1,
+      // Düzenlerken toplam sayıyı (total) baz al, yoksa stock'u al
+      piece: Number.isFinite(book.total)
+        ? book.total
+        : Number.isFinite(book.stock)
+          ? book.stock
+          : 1,
     });
     setIsFormOpen(true);
   };
@@ -215,8 +227,10 @@ export default function BooksPage({ onNavigate, user }) {
     if (!String(b.isbn ?? "").trim()) return "ISBN zorunlu.";
     if (!String(b.categoryId ?? "").trim()) return "Kategori ID zorunlu.";
     const pieceNum = Number(b.piece);
-    if (!Number.isFinite(pieceNum) || pieceNum < 0) return "Stok (adet) geçersiz.";
-    if (!Number.isFinite(Number(b.categoryId))) return "Kategori ID sayı olmalı.";
+    if (!Number.isFinite(pieceNum) || pieceNum < 0)
+      return "Stok (adet) geçersiz.";
+    if (!Number.isFinite(Number(b.categoryId)))
+      return "Kategori ID sayı olmalı.";
     return "";
   };
 
@@ -416,10 +430,14 @@ export default function BooksPage({ onNavigate, user }) {
                       <td className="tdSub">{book.isbn}</td>
 
                       <td>
-                        <span className="badge badgePurple">{book.category}</span>
+                        <span className="badge badgePurple">
+                          {book.category}
+                        </span>
                       </td>
 
-                      <td className="tdMuted">{book.stock}</td>
+                      <td className="tdMuted">
+                        {book.stock} / {book.total}
+                      </td>
 
                       <td>
                         <span
@@ -434,7 +452,10 @@ export default function BooksPage({ onNavigate, user }) {
                       </td>
 
                       <td className="tdRight">
-                        <div className="actions" onClick={(e) => e.stopPropagation()}>
+                        <div
+                          className="actions"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <button
                             className="iconBtn iconPurple"
                             title="Düzenle"
@@ -461,10 +482,9 @@ export default function BooksPage({ onNavigate, user }) {
             {/* Pagination */}
             <div className="tableFooter">
               <div className="footerText">
-                Gösteriliyor:{" "}
-                <b>{(currentPage - 1) * PAGE_SIZE + 1}</b> -{" "}
-                <b>{Math.min(currentPage * PAGE_SIZE, filteredBooks.length)}</b> /{" "}
-                <b>{filteredBooks.length}</b> kitap
+                Gösteriliyor: <b>{(currentPage - 1) * PAGE_SIZE + 1}</b> -{" "}
+                <b>{Math.min(currentPage * PAGE_SIZE, filteredBooks.length)}</b>{" "}
+                / <b>{filteredBooks.length}</b> kitap
               </div>
 
               <div className="pager">
@@ -488,7 +508,9 @@ export default function BooksPage({ onNavigate, user }) {
 
                 <button
                   className="pagerBtn"
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  }
                   disabled={currentPage === totalPages}
                 >
                   Sonraki
@@ -601,10 +623,18 @@ export default function BooksPage({ onNavigate, user }) {
             </div>
 
             <div className="mpModalFoot">
-              <button className="mpOutlineBtn" type="button" onClick={closeForm}>
+              <button
+                className="mpOutlineBtn"
+                type="button"
+                onClick={closeForm}
+              >
                 Cancel
               </button>
-              <button className="mpPrimaryBtn2" type="button" onClick={saveBook}>
+              <button
+                className="mpPrimaryBtn2"
+                type="button"
+                onClick={saveBook}
+              >
                 {formMode === "add" ? "Create" : "Save"}
               </button>
             </div>
