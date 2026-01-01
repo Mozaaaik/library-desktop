@@ -111,32 +111,51 @@
 
   -- (opsiyonel) Cezalar tablosunu boşaltmak istersen:
   -- TRUNCATE TABLE Cezalar;
+INSERT INTO Cezalar (IslemID, UyeID, Tutar, Aciklama, OlusturmaTarihi, Durum, OdemeTarihi)
+SELECT
+  oi.IslemID,
+  oi.UyeID,
+  (GREATEST(
+    DATEDIFF(
+      DATE(COALESCE(oi.TeslimTarihi, NOW())),
+      DATE(oi.SonTeslimTarihi)
+    ), 0
+  ) * 5.00) AS Tutar,
 
-  INSERT INTO Cezalar (IslemID, UyeID, Tutar, Aciklama, OlusturmaTarihi, Durum, OdemeTarihi)
-  SELECT
-    oi.IslemID,
-    oi.UyeID,
-    (GREATEST(
+  CONCAT(
+    GREATEST(
       DATEDIFF(
         DATE(COALESCE(oi.TeslimTarihi, NOW())),
         DATE(oi.SonTeslimTarihi)
       ), 0
-    ) * 5.00) AS Tutar,
-    CONCAT(
-      GREATEST(
-        DATEDIFF(
-          DATE(COALESCE(oi.TeslimTarihi, NOW())),
-          DATE(oi.SonTeslimTarihi)
-        ), 0
-      ),
-      ' gün gecikme.'
-    ) AS Aciklama,
+    ),
+    ' gün gecikme.'
+  ) AS Aciklama,
 
-    NOW() AS OlusturmaTarihi,
-    'Unpaid' AS Durum,
-    NULL AS OdemeTarihi
+  -- ✅ Tarih + saat farkı: taban tarih + (IslemID saniye)
+  DATE_ADD(
+    CASE
+      WHEN oi.TeslimTarihi IS NULL
+        THEN DATE_ADD(oi.SonTeslimTarihi, INTERVAL 1 DAY)  -- gecikme başladığı gün
+      ELSE oi.TeslimTarihi                                 -- geç teslim günü
+    END,
+    INTERVAL (oi.IslemID % 3600) SECOND                     -- her satıra farklı saniye
+  ) AS OlusturmaTarihi,
 
-  FROM OduncIslemleri oi
-  WHERE
-    oi.SonTeslimTarihi IS NOT NULL
-    AND GREATEST(DATEDIFF(DATE(COALESCE(oi.TeslimTarihi, NOW())), DATE(oi.SonTeslimTarihi)), 0) > 0;
+  CASE
+    WHEN oi.TeslimTarihi IS NULL THEN 'Unpaid'
+    ELSE 'Paid'
+  END AS Durum,
+
+  CASE
+    WHEN oi.TeslimTarihi IS NULL THEN NULL
+    ELSE DATE_ADD(oi.TeslimTarihi, INTERVAL (oi.IslemID % 3600) SECOND) -- ödeme saati de farklı olsun
+  END AS OdemeTarihi
+
+FROM OduncIslemleri oi
+WHERE
+  oi.SonTeslimTarihi IS NOT NULL
+  AND GREATEST(
+    DATEDIFF(DATE(COALESCE(oi.TeslimTarihi, NOW())), DATE(oi.SonTeslimTarihi)),
+    0
+  ) > 0;
