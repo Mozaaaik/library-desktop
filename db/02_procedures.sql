@@ -207,7 +207,7 @@ BEGIN
   WHERE (p_UyeID IS NULL OR c.UyeID = p_UyeID)
     AND (p_From IS NULL OR DATE(c.OlusturmaTarihi) >= p_From)
     AND (p_To   IS NULL OR DATE(c.OlusturmaTarihi) <= p_To)
-  ORDER BY c.OlusturmaTarihi DESC, c.CezaID DESC;
+  ORDER BY GREATEST(c.OlusturmaTarihi, COALESCE(c.OdemeTarihi, c.OlusturmaTarihi)) DESC;
 END//
 
 -- 8. Ceza Detay Prosedürü

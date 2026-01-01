@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common";
-import { pool } from "../db/mysql"; // senin mevcut pool importun
+import { Injectable } from '@nestjs/common';
+import { pool } from '../db/mysql';
 
 export interface DashboardSummary {
   kpis: {
@@ -21,7 +21,7 @@ export interface DashboardSummary {
     memberName: string;
     studentNo: string;
     amount: number;
-    status: "Paid" | "Unpaid";
+    status: 'Paid' | 'Unpaid';
     reason: string | null;
     createdAt: string;
   }>;
@@ -30,12 +30,12 @@ export interface DashboardSummary {
 @Injectable()
 export class DashboardService {
   async getSummary(): Promise<DashboardSummary> {
-    // 1) KPI
+    // 1) KPI (Aynı)
     const [kpiRows]: any = await pool.query(`
-      SELECT
+      SELECT 
         (SELECT COUNT(*) FROM Uyeler) AS totalMembers,
         (SELECT COUNT(*) FROM OduncIslemleri WHERE TeslimTarihi IS NULL) AS activeLoans,
-        (SELECT COUNT(*) FROM OduncIslemleri
+        (SELECT COUNT(*) FROM OduncIslemleri 
           WHERE TeslimTarihi IS NULL AND SonTeslimTarihi < NOW()
         ) AS overdueLoans,
         (SELECT COUNT(*) FROM Cezalar WHERE Durum = 'Unpaid') AS unpaidFines;
@@ -48,9 +48,9 @@ export class DashboardService {
       unpaidFines: Number(kpiRows?.[0]?.unpaidFines ?? 0),
     };
 
-    // 2) Top 3 geciken üye
+    // 2) Top 3 geciken üye (Aynı)
     const [overdueRows]: any = await pool.query(`
-      SELECT
+      SELECT 
         u.UyeID,
         CONCAT(u.Ad, ' ', u.Soyad) AS memberName,
         u.OgrenciNo AS studentNo,
@@ -58,7 +58,7 @@ export class DashboardService {
         COUNT(*) AS overdueCount
       FROM OduncIslemleri o
       JOIN Uyeler u ON u.UyeID = o.UyeID
-      WHERE o.TeslimTarihi IS NULL
+      WHERE o.TeslimTarihi IS NULL 
         AND o.SonTeslimTarihi < NOW()
       GROUP BY u.UyeID, u.Ad, u.Soyad, u.OgrenciNo
       ORDER BY overdueDays DESC, overdueCount DESC
@@ -67,15 +67,16 @@ export class DashboardService {
 
     const topOverdue = (overdueRows || []).map((r: any) => ({
       uyeId: Number(r.UyeID),
-      memberName: String(r.memberName ?? "-"),
-      studentNo: String(r.studentNo ?? "-"),
+      memberName: String(r.memberName ?? '-'),
+      studentNo: String(r.studentNo ?? '-'),
       overdueDays: Number(r.overdueDays ?? 0),
       overdueCount: Number(r.overdueCount ?? 0),
     }));
 
-    // 3) Son 3 ceza
+    // 3) Son 3 ceza (GÜNCELLENDİ: Ödeme işlemine göre sıralama eklendi)
+    // GREATEST(Olusturma, Odeme) mantığı ile en son işlem gören en üste çıkar.
     const [fineRows]: any = await pool.query(`
-      SELECT
+      SELECT 
         c.CezaID,
         c.UyeID,
         CONCAT(u.Ad, ' ', u.Soyad) AS memberName,
@@ -83,22 +84,23 @@ export class DashboardService {
         c.Tutar AS amount,
         c.Durum AS status,
         c.Aciklama AS reason,
-        c.OlusturmaTarihi AS createdAt
+        c.OlusturmaTarihi AS createdAt,
+        c.OdemeTarihi
       FROM Cezalar c
       JOIN Uyeler u ON u.UyeID = c.UyeID
-      ORDER BY c.OlusturmaTarihi DESC
+      ORDER BY GREATEST(c.OlusturmaTarihi, COALESCE(c.OdemeTarihi, c.OlusturmaTarihi)) DESC
       LIMIT 3;
     `);
 
     const latestFines = (fineRows || []).map((r: any) => ({
       cezaId: Number(r.CezaID),
       uyeId: Number(r.UyeID),
-      memberName: String(r.memberName ?? "-"),
-      studentNo: String(r.studentNo ?? "-"),
+      memberName: String(r.memberName ?? '-'),
+      studentNo: String(r.studentNo ?? '-'),
       amount: Number(r.amount ?? 0),
-      status: r.status === "Paid" ? "Paid" : "Unpaid",
+      status: r.status === 'Paid' ? 'Paid' : 'Unpaid',
       reason: r.reason ?? null,
-      createdAt: String(r.createdAt ?? ""),
+      createdAt: String(r.createdAt ?? ''),
     }));
 
     return { kpis, topOverdue, latestFines };
