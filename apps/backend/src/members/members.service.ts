@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { pool } from '../db/mysql';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
 
@@ -120,31 +124,31 @@ export class MembersService {
   async remove(id: number) {
     // 1) Üye var mı?
     const [mRows]: any = await pool.query(
-      "SELECT UyeID FROM Uyeler WHERE UyeID = ?",
-      [id]
+      'SELECT UyeID FROM Uyeler WHERE UyeID = ?',
+      [id],
     );
 
     if (!mRows || mRows.length === 0) {
-      throw new NotFoundException("Üye bulunamadı.");
+      throw new NotFoundException('Üye bulunamadı.');
     }
 
     // 2) Bu üyenin geçmişte ödünç kaydı var mı?
     const [oRows]: any = await pool.query(
-      "SELECT 1 FROM oduncislemleri WHERE UyeID = ? LIMIT 1",
-      [id]
+      'SELECT 1 FROM OduncIslemleri WHERE UyeID = ? LIMIT 1',
+      [id],
     );
 
     if (oRows && oRows.length > 0) {
       // 409 Conflict -> frontend bunu “silemezsiniz” diye gösterecek
       throw new ConflictException(
-        "Bu öğrenci daha önce ödünç işlemi yapmış. Geçmiş kayıtlar nedeniyle silinemez. İsterseniz pasife alın."
+        'Bu öğrenci daha önce ödünç işlemi yapmış. Geçmiş kayıtlar nedeniyle silinemez. İsterseniz pasife alın.',
       );
     }
 
     // 3) Sorun yoksa sil
-    await pool.query("DELETE FROM Uyeler WHERE UyeID = ?", [id]);
+    await pool.query('DELETE FROM Uyeler WHERE UyeID = ?', [id]);
 
-    return { message: "Üye silindi." };
+    return { message: 'Üye silindi.' };
   }
 
   // ✅ NEW: Üyenin ödünç kitaplarını çek
