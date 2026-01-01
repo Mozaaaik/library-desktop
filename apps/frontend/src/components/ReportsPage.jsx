@@ -140,7 +140,7 @@ export default function ReportsPage({ navParams }) {
 
     // Sayfalama Stateleri
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 9; // 9 sayfalık sınır
+    const itemsPerPage = 7; 
 
     useEffect(() => {
         if (!navParams?.tab) return;
