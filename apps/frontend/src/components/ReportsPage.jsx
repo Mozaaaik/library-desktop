@@ -1018,7 +1018,7 @@ export default function ReportsPage({ navParams }) {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {overdueRows.map((r) => (
+                                                {paginatedData.map((r) => (
                                                     <tr key={r.id}>
                                                         <td>
                                                             <div className="cellStack">
@@ -1247,7 +1247,7 @@ export default function ReportsPage({ navParams }) {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {mostRows.map((r, idx) => (
+                                                {paginatedData.map((r, idx) => (
                                                     <tr key={idx}>
                                                         <td className="textWhite">{r.bookName}</td>
                                                         <td className="textSoft">{r.author}</td>

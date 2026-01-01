@@ -214,7 +214,7 @@ export default function Dashboard({ onNavigate, user }) {
           </div>
 
           {recent.overdueTop5.length === 0 ? (
-            <div className="dbEmpty">Geciken kayıt yok 🎉</div>
+            <div className="dbEmpty">Geciken kayıt yok</div>
           ) : (
             <div className="dbList">
               {recent.overdueTop5.map((x, i) => (
