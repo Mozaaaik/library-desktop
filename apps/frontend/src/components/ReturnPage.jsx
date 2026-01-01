@@ -66,8 +66,10 @@ const ReturnPage = ({ onNavigate }) => {
 
   const calculateDelayInfo = (dueDateStr) => {
     const today = new Date();
+    today.setHours(0, 0, 0, 0); // Artık fazlalık saat gün olarak gözükmüyor.
     const due = new Date(dueDateStr);
-    const diffTime = today - due;
+    due.setHours(0, 0, 0, 0); // Artık fazlalık saat gün olarak gözükmüyor.
+    const diffTime = today.getTime() - due.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays > 0 ? diffDays : 0;
   };
