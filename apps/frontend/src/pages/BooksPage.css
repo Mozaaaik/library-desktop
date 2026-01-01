@@ -219,11 +219,9 @@
   width: 40px;
   height: 56px;
   border-radius: 12px;
-  background: linear-gradient(
-    135deg,
-    rgba(34, 211, 238, 0.18),
-    rgba(168, 85, 247, 0.14)
-  );
+  background: linear-gradient(135deg,
+      rgba(34, 211, 238, 0.18),
+      rgba(168, 85, 247, 0.14));
   border: 1px solid rgba(34, 211, 238, 0.25);
   display: flex;
   align-items: center;
@@ -355,8 +353,13 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .emptyState {
@@ -390,4 +393,140 @@
 .pagerBtn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+/* ---------------------------
+   RESULT MODAL (Kitap silindi)
+---------------------------- */
+
+/* overlay biraz daha blur + karartma */
+.mpOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 18px;
+}
+
+/* sonuç modal kutusu */
+.resultModal {
+  width: min(520px, 92vw);
+  background: rgba(14, 18, 28, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 26px 24px 20px;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.6);
+  position: relative;
+  text-align: center;
+  color: #e9eefb;
+}
+
+/* X kapatma */
+.resultClose {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: #e9eefb;
+  transition: 0.15s;
+}
+
+.resultClose:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ikon */
+.resultIcon {
+  width: 78px;
+  height: 78px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  margin: 8px auto 14px;
+}
+
+/* success / error arka planları */
+.resultIcon.success {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.resultIcon.error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.32);
+}
+
+.resultTitle {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  margin-top: 6px;
+}
+
+.resultSub {
+  margin-top: 10px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: rgba(233, 238, 251, 0.75);
+}
+
+/* butonlar */
+.resultActions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+.resultBtn {
+  width: min(420px, 100%);
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
+  color: #e9eefb;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.resultBtn:hover {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+/* ---------------------------
+   DELETE CONFIRM Modal (small)
+---------------------------- */
+
+.mpModal.small {
+  width: min(520px, 92vw);
+  padding-bottom: 18px;
+}
+
+/* mpDangerBtn yoksa ekle */
+.mpDangerBtn {
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.14);
+  color: #ffd7d7;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.mpDangerBtn:hover {
+  background: rgba(239, 68, 68, 0.22);
 }

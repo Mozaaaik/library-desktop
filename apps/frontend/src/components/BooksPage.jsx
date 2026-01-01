@@ -70,6 +70,66 @@ export default function BooksPage({ onNavigate, user }) {
   const [editingBook, setEditingBook] = useState(null);
 
   const [toast, setToast] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, book: null });
+  const [resultModal, setResultModal] = useState({
+    open: false,
+    type: "success", // success | error
+    title: "",
+    message: "",
+  });
+
+  const requestDeleteBook = (book) => {
+    if (!book?.id) return;
+    setDeleteConfirm({ open: true, book });
+  };
+
+  const confirmDeleteBook = async () => {
+    const book = deleteConfirm.book;
+    if (!book?.id) return;
+
+    const keepPage = currentPage;
+
+    try {
+      const res = await fetch(`${API_URL}/books/${book.id}`, { method: "DELETE" });
+      const raw = await res.text();
+
+      let serverMsg = "";
+      try {
+        const j = JSON.parse(raw);
+        serverMsg = j?.message || "";
+      } catch {
+        serverMsg = raw; // JSON değilse düz metin
+      }
+
+      if (!res.ok) {
+        throw new Error(serverMsg || "Kitap silinemedi");
+      }
+
+      //  UI’dan kaldır
+      setBooks((prev) => prev.filter((b) => b.id !== book.id));
+      setCurrentPage(keepPage);
+
+      //  Başarılı sonuç modalı
+      setResultModal({
+        open: true,
+        type: "success",
+        title: "Silme Tamamlandı",
+        message: `"${book.title}" kitabı başarıyla silindi.`,
+      });
+    } catch (e) {
+      console.error(e);
+      setResultModal({
+        open: true,
+        type: "error",
+        title: "Silme Başarısız",
+        message: e?.message || "Kitap silinemedi.",
+      });
+    } finally {
+      setDeleteConfirm({ open: false, book: null });
+    }
+  };
+
+
 
   const showToast = (msg) => {
     setToast(msg);
@@ -125,12 +185,12 @@ export default function BooksPage({ onNavigate, user }) {
     fetchCategories();
   }, []);
 
-  // ✅ Members gibi: search/status/category değişince sadece sayfayı 1'e çek
+  //  Members gibi: search/status/category değişince sadece sayfayı 1'e çek
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, selectedCategoryId, statusFilter]);
 
-  // ✅ Local search + local filter (Members mantığı)
+  // Local search + local filter (Members mantığı)
   const filteredBooks = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
 
@@ -277,48 +337,13 @@ export default function BooksPage({ onNavigate, user }) {
       );
       closeForm();
 
-      // ✅ Members gibi: işlem sonrası listeyi yenile
+      // Members gibi: işlem sonrası listeyi yenile
       await fetchBooks();
 
       setCurrentPage(keepPage);
     } catch (e) {
       console.error(e);
       showToast("Hata: Kitap kaydedilemedi.");
-    }
-  };
-
-  const deleteBook = async (book) => {
-    if (!book?.id) return;
-
-    const ok = window.confirm(`"${book.title}" kitabını silmek istiyor musun?`);
-    if (!ok) return;
-
-    const keepPage = currentPage;
-
-    try {
-      const res = await fetch(`${API_URL}/books/${book.id}`, {
-        method: "DELETE",
-      });
-
-      const raw = await res.text();
-      console.log("DELETE", book.id, res.status, raw);
-
-      if (!res.ok) throw new Error("Kitap silinemedi");
-
-      // Silme Başarılı Toast Iconlu
-      showToast(
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          Kitap silindi <CheckCircle size={18} />
-        </div>
-      );
-
-      // Anında UI’dan kaldır
-      setBooks((prev) => prev.filter((b) => b.id !== book.id));
-
-      setCurrentPage(keepPage);
-    } catch (e) {
-      console.error(e);
-      showToast("Hata: Kitap silinemedi.");
     }
   };
 
@@ -467,7 +492,7 @@ export default function BooksPage({ onNavigate, user }) {
                           <button
                             className="iconBtn iconRed"
                             title="Sil"
-                            onClick={() => deleteBook(book)}
+                            onClick={() => requestDeleteBook(book)}
                           >
                             <Trash2 size={18} />
                           </button>
@@ -641,6 +666,79 @@ export default function BooksPage({ onNavigate, user }) {
           </div>
         </div>
       )}
+
+      {deleteConfirm.open && (
+        <div className="mpOverlay" role="dialog" aria-modal="true">
+          <div className="mpModal small">
+            <div className="mpModalHead">
+              <div>
+                <div className="mpModalTitle">Kitabı Sil</div>
+                <div className="mpModalSub">
+                  <b>{deleteConfirm.book?.title}</b> silinsin mi?
+                </div>
+              </div>
+              <button
+                className="mpX"
+                type="button"
+                onClick={() => setDeleteConfirm({ open: false, book: null })}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="mpModalFoot">
+              <button
+                className="mpOutlineBtn"
+                type="button"
+                onClick={() => setDeleteConfirm({ open: false, book: null })}
+              >
+                Vazgeç
+              </button>
+
+              <button className="mpDangerBtn" type="button" onClick={confirmDeleteBook}>
+                Sil
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {resultModal.open && (
+        <div className="mpOverlay" role="dialog" aria-modal="true">
+          <div className="resultModal">
+            <button
+              className="resultClose"
+              type="button"
+              onClick={() => setResultModal((p) => ({ ...p, open: false }))}
+            >
+              <X size={18} />
+            </button>
+
+            <div className={`resultIcon ${resultModal.type}`}>
+              {resultModal.type === "success" ? (
+                <CheckCircle size={44} />
+              ) : (
+                <AlertCircle size={44} />
+              )}
+            </div>
+
+            <div className="resultTitle">{resultModal.title}</div>
+            <div className="resultSub">{resultModal.message}</div>
+
+            <div className="resultActions">
+              <button
+                className="resultBtn"
+                type="button"
+                onClick={() => setResultModal((p) => ({ ...p, open: false }))}
+              >
+                Tamam
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
 
       {/* Toast */}
       {toast && <div className="mpToast">{toast}</div>}
