@@ -27,7 +27,9 @@ function moneyTry(v) {
 
 // "unpaid" içinde "paid" geçtiği için önce UNPAID kontrol edilir.
 function normalizeStatus(raw) {
-  const s = String(raw ?? "").toLowerCase().trim();
+  const s = String(raw ?? "")
+    .toLowerCase()
+    .trim();
   if (!s) return "Unpaid";
 
   if (
@@ -175,7 +177,11 @@ export default function FinesPage({ onNavigate, user }) {
 
   const renderSortIcon = (key) => {
     if (sort.key !== key) return <ChevronsUpDown size={14} />;
-    return sort.dir === "asc" ? <ChevronUp size={14} /> : <ChevronDown size={14} />;
+    return sort.dir === "asc" ? (
+      <ChevronUp size={14} />
+    ) : (
+      <ChevronDown size={14} />
+    );
   };
 
   const getSortValue = (f, key) => {
@@ -269,7 +275,9 @@ export default function FinesPage({ onNavigate, user }) {
       );
 
       // ✅ local listede anında güncelle
-      setAllFines((prev) => prev.map((x) => (x.id === fine.id ? { ...x, status: "Paid" } : x)));
+      setAllFines((prev) =>
+        prev.map((x) => (x.id === fine.id ? { ...x, status: "Paid" } : x))
+      );
 
       // detay açıksa onu da güncelle
       setDetailFine((prev) =>
@@ -315,7 +323,9 @@ export default function FinesPage({ onNavigate, user }) {
       const matchesSearch =
         !q ||
         (f.memberName ?? "").toLowerCase().includes(q) ||
-        String(f.studentId ?? "").toLowerCase().includes(q) ||
+        String(f.studentId ?? "")
+          .toLowerCase()
+          .includes(q) ||
         (f.book ?? "").toLowerCase().includes(q);
 
       // date filter
@@ -340,9 +350,23 @@ export default function FinesPage({ onNavigate, user }) {
   const sortedFines = useMemo(() => {
     if (!sort.key) {
       return [...filteredFines].sort((a, b) => {
-        const timeA = new Date(a.createdAt || 0).getTime();
-        const timeB = new Date(b.createdAt || 0).getTime();
-        return timeB - timeA; // B - A (Descending / Yeniden Eskiye)
+        // Her ceza için en güncel işlem tarihini belirle (Oluşturulma vs Ödenme)
+        const lastActionA = Math.max(
+          new Date(a.createdAt || 0).getTime(),
+          new Date(a.paidAt || 0).getTime()
+        );
+        const lastActionB = Math.max(
+          new Date(b.createdAt || 0).getTime(),
+          new Date(b.paidAt || 0).getTime()
+        );
+
+        // En son işlem gören (büyük zaman damgası) en üste gelsin
+        if (lastActionB !== lastActionA) {
+          return lastActionB - lastActionA;
+        }
+
+        // Tarihler tamamen aynıysa (milisaniye bazında), ID'ye göre sırala
+        return Number(b.id ?? 0) - Number(a.id ?? 0);
       });
     }
 
@@ -393,7 +417,10 @@ export default function FinesPage({ onNavigate, user }) {
     return sortedFines.slice(start, start + PAGE_SIZE);
   }, [sortedFines, currentPage]);
 
-  const pageNumbers = useMemo(() => getPageNumbers(currentPage, totalPages), [currentPage, totalPages]);
+  const pageNumbers = useMemo(
+    () => getPageNumbers(currentPage, totalPages),
+    [currentPage, totalPages]
+  );
 
   // -----------------------------
   // ACTIONS
@@ -450,7 +477,9 @@ export default function FinesPage({ onNavigate, user }) {
 
         <div className="fpCard fpCardCyan">
           <div>
-            <div className="fpCardValue">{moneyTry(totalPaid + totalUnpaid)}</div>
+            <div className="fpCardValue">
+              {moneyTry(totalPaid + totalUnpaid)}
+            </div>
             <div className="fpCardLabel">Toplam Ceza</div>
           </div>
           <div className="fpIcon fpIconCyan">
@@ -488,13 +517,23 @@ export default function FinesPage({ onNavigate, user }) {
         {/* Date from */}
         <div className="fpField">
           <label>Başlangıç Tarihi</label>
-          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="fpInput" />
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className="fpInput"
+          />
         </div>
 
         {/* Date to */}
         <div className="fpField">
           <label>Bitiş Tarihi</label>
-          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="fpInput" />
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="fpInput"
+          />
         </div>
 
         <div className="fpFilterActions">
@@ -513,7 +552,9 @@ export default function FinesPage({ onNavigate, user }) {
         ) : filteredFines.length === 0 ? (
           <div className="fpEmpty">
             <div className="fpEmptyTitle">Ceza bulunamadı</div>
-            <div className="fpEmptySub">Arama/filtreleri değiştirip tekrar dene.</div>
+            <div className="fpEmptySub">
+              Arama/filtreleri değiştirip tekrar dene.
+            </div>
             <button className="fpGhostBtn" onClick={clearFilters} type="button">
               Filtreleri Temizle
             </button>
@@ -525,28 +566,63 @@ export default function FinesPage({ onNavigate, user }) {
                 <thead>
                   <tr>
                     <th>
-                      <button type="button" className="fpSortTh" onClick={() => toggleSort("memberName")}>
-                        Üye <span className="fpSortIcon">{renderSortIcon("memberName")}</span>
+                      <button
+                        type="button"
+                        className="fpSortTh"
+                        onClick={() => toggleSort("memberName")}
+                      >
+                        Üye{" "}
+                        <span className="fpSortIcon">
+                          {renderSortIcon("memberName")}
+                        </span>
                       </button>
                     </th>
                     <th>
-                      <button type="button" className="fpSortTh" onClick={() => toggleSort("studentId")}>
-                        Öğrenci No <span className="fpSortIcon">{renderSortIcon("studentId")}</span>
+                      <button
+                        type="button"
+                        className="fpSortTh"
+                        onClick={() => toggleSort("studentId")}
+                      >
+                        Öğrenci No{" "}
+                        <span className="fpSortIcon">
+                          {renderSortIcon("studentId")}
+                        </span>
                       </button>
                     </th>
                     <th>
-                      <button type="button" className="fpSortTh" onClick={() => toggleSort("book")}>
-                        Kitap <span className="fpSortIcon">{renderSortIcon("book")}</span>
+                      <button
+                        type="button"
+                        className="fpSortTh"
+                        onClick={() => toggleSort("book")}
+                      >
+                        Kitap{" "}
+                        <span className="fpSortIcon">
+                          {renderSortIcon("book")}
+                        </span>
                       </button>
                     </th>
                     <th>
-                      <button type="button" className="fpSortTh" onClick={() => toggleSort("daysOverdue")}>
-                        Gecikme <span className="fpSortIcon">{renderSortIcon("daysOverdue")}</span>
+                      <button
+                        type="button"
+                        className="fpSortTh"
+                        onClick={() => toggleSort("daysOverdue")}
+                      >
+                        Gecikme{" "}
+                        <span className="fpSortIcon">
+                          {renderSortIcon("daysOverdue")}
+                        </span>
                       </button>
                     </th>
                     <th>
-                      <button type="button" className="fpSortTh" onClick={() => toggleSort("amount")}>
-                        Tutar <span className="fpSortIcon">{renderSortIcon("amount")}</span>
+                      <button
+                        type="button"
+                        className="fpSortTh"
+                        onClick={() => toggleSort("amount")}
+                      >
+                        Tutar{" "}
+                        <span className="fpSortIcon">
+                          {renderSortIcon("amount")}
+                        </span>
                       </button>
                     </th>
                     <th>Durum</th>
@@ -569,12 +645,21 @@ export default function FinesPage({ onNavigate, user }) {
                       <td className="overdue">{fine.daysOverdue} gün</td>
                       <td className="amount">{moneyTry(fine.amount)}</td>
                       <td>
-                        <span className={fine.status === "Paid" ? "fpBadge fpBadgeGreen" : "fpBadge fpBadgeRed"}>
+                        <span
+                          className={
+                            fine.status === "Paid"
+                              ? "fpBadge fpBadgeGreen"
+                              : "fpBadge fpBadgeRed"
+                          }
+                        >
                           {statusTextTR(fine.status)}
                         </span>
                       </td>
 
-                      <td className="right" onClick={(e) => e.stopPropagation()}>
+                      <td
+                        className="right"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <button
                           className="fpIconBtn"
                           title="Detay"
@@ -585,7 +670,11 @@ export default function FinesPage({ onNavigate, user }) {
                         </button>
 
                         {fine.status === "Unpaid" ? (
-                          <button className="fpPayBtn" type="button" onClick={() => markAsPaid(fine)}>
+                          <button
+                            className="fpPayBtn"
+                            type="button"
+                            onClick={() => markAsPaid(fine)}
+                          >
                             Ödendi İşaretle
                           </button>
                         ) : (
@@ -602,7 +691,8 @@ export default function FinesPage({ onNavigate, user }) {
             <div className="fpTableFooter">
               <div className="fpFooterText">
                 Gösterilen: <b>{(currentPage - 1) * PAGE_SIZE + 1}</b> -{" "}
-                <b>{Math.min(currentPage * PAGE_SIZE, sortedFines.length)}</b> / <b>{sortedFines.length}</b>
+                <b>{Math.min(currentPage * PAGE_SIZE, sortedFines.length)}</b> /{" "}
+                <b>{sortedFines.length}</b>
               </div>
 
               <div className="fpPager">
@@ -628,7 +718,9 @@ export default function FinesPage({ onNavigate, user }) {
 
                 <button
                   className="fpPagerBtn"
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  }
                   disabled={currentPage === totalPages}
                   type="button"
                 >
@@ -648,7 +740,8 @@ export default function FinesPage({ onNavigate, user }) {
               <div>
                 <div className="fpModalTitle">Ceza Detayı</div>
                 <div className="fpModalSub">
-                  {detailFine?.memberName ?? "-"} • {detailFine?.studentId ?? "-"}
+                  {detailFine?.memberName ?? "-"} •{" "}
+                  {detailFine?.studentId ?? "-"}
                 </div>
               </div>
               <button className="fpModalX" type="button" onClick={closeDetail}>
@@ -683,7 +776,13 @@ export default function FinesPage({ onNavigate, user }) {
                   <div className="fpDetailItem">
                     <div className="k">Durum</div>
                     <div className="v">
-                      <span className={detailFine.status === "Paid" ? "fpBadge fpBadgeGreen" : "fpBadge fpBadgeRed"}>
+                      <span
+                        className={
+                          detailFine.status === "Paid"
+                            ? "fpBadge fpBadgeGreen"
+                            : "fpBadge fpBadgeRed"
+                        }
+                      >
                         {statusTextTR(detailFine.status)}
                       </span>
                     </div>
@@ -695,18 +794,27 @@ export default function FinesPage({ onNavigate, user }) {
                   </div>
                   <div className="fpDetailItem">
                     <div className="k">Oluşturma Tarihi</div>
-                    <div className="v">{formatDateTimeTR(detailFine.createdAt)}</div>
+                    <div className="v">
+                      {formatDateTimeTR(detailFine.createdAt)}
+                    </div>
                   </div>
                   <div className="fpDetailItem">
                     <div className="k">Son Teslim Tarihi</div>
-                    <div className="v">{formatDateTimeTR(detailFine.dueDate)}</div>
+                    <div className="v">
+                      {formatDateTimeTR(detailFine.dueDate)}
+                    </div>
                   </div>
                   <div className="fpDetailItem">
                     <div className="k">Ödeme Tarihi</div>
-                    <div className="v">{formatDateTimeTR(detailFine.paidAt)}</div>
+                    <div className="v">
+                      {formatDateTimeTR(detailFine.paidAt)}
+                    </div>
                   </div>
 
-                  <div className="fpDetailItem" style={{ gridColumn: "1 / -1" }}>
+                  <div
+                    className="fpDetailItem"
+                    style={{ gridColumn: "1 / -1" }}
+                  >
                     <div className="k">Açıklama</div>
                     <div className="v">{detailFine.aciklama ?? "-"}</div>
                   </div>
@@ -727,7 +835,11 @@ export default function FinesPage({ onNavigate, user }) {
                   Ödendi İşaretle
                 </button>
               ) : (
-                <button className="fpGhostBtn" type="button" onClick={closeDetail}>
+                <button
+                  className="fpGhostBtn"
+                  type="button"
+                  onClick={closeDetail}
+                >
                   Kapat
                 </button>
               )}
