@@ -15,7 +15,7 @@ import * as membersService_1 from './members.service';
 export class MembersController {
   constructor(
     private readonly membersService: membersService_1.MembersService,
-  ) { }
+  ) {}
 
   @Get()
   getAll() {
@@ -50,12 +50,19 @@ export class MembersController {
     const data = await this.membersService.findLoans(+id, onlyActive);
 
     console.log('[GET /members/:id/loans] id=', id, 'active=', active);
-    console.log('[GET /members/:id/loans] type=', Array.isArray(data) ? 'array' : typeof data);
-    console.log('[GET /members/:id/loans] count=', Array.isArray(data) ? data.length : 'n/a');
-    console.log('[GET /members/:id/loans] sample=', Array.isArray(data) ? data[0] : data);
+    console.log(
+      '[GET /members/:id/loans] type=',
+      Array.isArray(data) ? 'array' : typeof data,
+    );
+    console.log(
+      '[GET /members/:id/loans] count=',
+      Array.isArray(data) ? data.length : 'n/a',
+    );
+    console.log(
+      '[GET /members/:id/loans] sample=',
+      Array.isArray(data) ? data[0] : data,
+    );
 
     return data;
   }
-
-
 }

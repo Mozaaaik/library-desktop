@@ -86,7 +86,7 @@ export class LoansService {
        SELECT 
          o.IslemID, k.Baslik, k.ISBN, o.VerilisTarihi, o.SonTeslimTarihi
        FROM OduncIslemleri o
-       JOIN Kitaplar k ON o.KitapID = k.KitapID
+       JOIN Kitaplar k ON o.KitapID = k.KitapID-
        WHERE o.UyeID = ? AND o.TeslimTarihi IS NULL
        ORDER BY o.SonTeslimTarihi ASC
     `;

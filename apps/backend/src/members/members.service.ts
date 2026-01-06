@@ -49,7 +49,7 @@ interface LoanRow extends RowDataPacket {
 export class MembersService {
   async update(id: number, body: CreateMemberDto) {
     const sql = `
-      UPDATE Uyeler 
+      UPDATE Uyeler -
       SET Ad=?, Soyad=?, OgrenciNo=?, Email=?, Telefon=?, Durum=? 
       WHERE UyeID=?
     `;

@@ -387,7 +387,26 @@ export default function ReportsPage({ navParams }) {
         { key: "dueDate", label: "Son Teslim" },
         { key: "status", label: "Durum" },
       ];
-      exportXlsx("tarih_araligi_odunc.xlsx", "TarihAraligi", dateRows, cols);
+
+      // İngilizce statüleri Türkçeye çeviriyoruz
+      const translatedRows = dateRows.map((r) => ({
+        ...r,
+        status:
+          r.status === "returned"
+            ? "Teslim Edildi"
+            : r.status === "overdue"
+              ? "Gecikmiş"
+              : r.status === "active"
+                ? "Aktif"
+                : r.status,
+      }));
+
+      exportXlsx(
+        "tarih_araligi_odunc.xlsx",
+        "TarihAraligi",
+        translatedRows,
+        cols
+      );
       return;
     }
 
